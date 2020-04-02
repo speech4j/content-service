@@ -16,10 +16,10 @@ The content-service for uploading an etalon pair to AWS S3.
  * `./gradlew clean test` -- build and run the tests.
  
 ## Launch Instructions 
- - ternimal:
+ - terminal:
  * `java -jar build/libs/*.jar` -- run the project
  - docker:
  * `docker build .` - build docker image
- *  `docker run image` - run app
+ * `docker run image` - run app
  
  
