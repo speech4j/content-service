@@ -10,7 +10,7 @@ The content-service for uploading an etalon pair to AWS S3.
 
 ## Building Instructions
  * `./gradlew clean build` -- build the project
- * `java -jar build/libs/*.jar -- run the project
+ * `java -jar build/libs/*.jar` -- run the project
 
 ## Testing Instructions
 (If running from windows - replace / to \ )
