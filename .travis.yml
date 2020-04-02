@@ -5,11 +5,12 @@ jdk:
 
 before_install:
   - chmod +x gradlew
+  - docker build -t speech4j/content-service -f Dockerfile .
 
 script:
   - ./gradlew build --stacktrace
 
 after_success:
-  - docker build -t speech4j/content-service .gt
+  - docker build -t speech4j/content-service .
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push speech4j/content-service
