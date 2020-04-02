@@ -19,7 +19,7 @@ The content-service for uploading an etalon pair to AWS S3.
  - ternimal:
  * `java -jar build/libs/*.jar` -- run the project
  - docker:
- * `docker buil .` - build docker image
+ * `docker build .` - build docker image
  *  `docker run image` - run app
  
  
