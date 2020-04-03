@@ -6,8 +6,6 @@ jdk:
 addons:
   sonarcloud:
     organization: "speech4j"
-    token:
-      secure: ""
 
 before_install:
   - chmod +x gradlew
