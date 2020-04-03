@@ -22,7 +22,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/tenants/{tenantId}/contents")
+@RequestMapping("/api/tenants/{tenantId}/contents")
 public class ContentController {
 
     private EntityService<ContentBox> service;
