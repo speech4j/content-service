@@ -9,7 +9,7 @@ public interface EntityService<E> {
 
     E update(E entity, String id);
 
-    List<E> findByTag(String tag);
+    List<E> findAllByTag(String tag);
 
     void deleteById(String id);
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ContentServiceImpl implements EntityService{
+public class ContentServiceImpl implements EntityService<ContentBox>{
     private ContentBoxRepository repository;
 
     @Autowired
@@ -18,28 +18,34 @@ public class ContentServiceImpl implements EntityService{
     }
 
     @Override
-    public Object create(Object entity) {
-        return null;
+    public ContentBox create(ContentBox entity) {
+        return repository.save(entity);
     }
 
     @Override
-    public Object findById(String id) {
-        return null;
+    public ContentBox findById(String id) {
+        return findByIdOrThrowException(id);
     }
 
     @Override
-    public Object update(Object entity, String id) {
-        return null;
+    public ContentBox update(ContentBox entity, String id) {
+        ContentBox content = findByIdOrThrowException(id);
+        content.setContentUrl(entity.getContentUrl());
+        content.setTranscript(entity.getTranscript());
+        content.setTags(entity.getTags());
+
+        return repository.save(content);
     }
 
     @Override
-    public List findByTag(String tag) {
-        return null;
+    public List<ContentBox> findAllByTag(String tag) {
+        return repository.findAllByTag(tag);
     }
 
     @Override
     public void deleteById(String id) {
-
+        findByIdOrThrowException(id);
+        repository.deleteById(id);
     }
 
     private ContentBox findByIdOrThrowException(String id) {
