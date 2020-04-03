@@ -3,13 +3,28 @@ language: java
 jdk:
   - openjdk11
 
+addons:
+  sonarcloud:
+    organization: "speech4j"
+    token:
+      secure: ""
+
 before_install:
   - chmod +x gradlew
 
 script:
   - ./gradlew build --stacktrace
+  - git fetch --unshallow
+  - ./gradlew sonarqube --stacktrace
 
 after_success:
   - docker build -t speech4j/content-service -f Dockerfile .
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push speech4j/content-service
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
+    - '$HOME/.gradle'
+    - '.gradle'

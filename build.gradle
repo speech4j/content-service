@@ -2,6 +2,8 @@ plugins {
     id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
+    id 'jacoco'
+    id "org.sonarqube" version "2.8"
 }
 
 group = 'com.speech4j'
@@ -32,3 +34,22 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "speech4j_content-service"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/text.xml")
+        html.enabled false
+        csv.enabled false
+    }
+}
+
+project.tasks["sonarqube"].dependsOn "jacocoTestReport"
