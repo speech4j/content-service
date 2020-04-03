@@ -3,6 +3,7 @@ package com.speech4j.contentservice.controller;
 import com.speech4j.contentservice.dto.request.ContentBoxRequestDto;
 import com.speech4j.contentservice.dto.response.ContentBoxResponseDto;
 import com.speech4j.contentservice.entity.ContentBox;
+import com.speech4j.contentservice.entity.Tag;
 import com.speech4j.contentservice.mapper.ContentBoxDtoMapper;
 import com.speech4j.contentservice.service.EntityService;
 import org.springframework.beans.factory.annotation.Autowired;
