@@ -3,6 +3,10 @@ The content-service for uploading an etalon pair to AWS S3.
 
 ## Project Status
 [![Build Status](https://travis-ci.com/speech4j/content-service.svg?branch=master)](https://travis-ci.com/speech4j/content-service)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=speech4j_content-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=speech4j_content-service)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=speech4j_content-service&metric=coverage)](https://sonarcloud.io/dashboard?id=speech4j_content-service)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=speech4j_content-service&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=speech4j_content-service)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=speech4j_content-service&metric=sqale_index)](https://sonarcloud.io/dashboard?id=speech4j_content-service)
 
 ## Requirements
 * Java 11
