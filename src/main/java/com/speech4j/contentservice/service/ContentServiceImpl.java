@@ -39,7 +39,7 @@ public class ContentServiceImpl implements EntityService<ContentBox>{
 
     @Override
     public List<ContentBox> findAllByTag(String tag) {
-        return repository.findAllByTag(tag);
+        return null; ///repository.findAllByTag(tag);
     }
 
     @Override

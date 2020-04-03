@@ -40,7 +40,7 @@ public class ContentController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentBoxResponseDto findById(String id) {
+    public ContentBoxResponseDto findById(@PathVariable("id")String id) {
         return mapper.toDto(service.findById(id));
     }
 
@@ -61,7 +61,5 @@ public class ContentController {
     public void delete( @PathVariable("id") String id) {
         service.deleteById(id);
     }
-
-
 
 }

@@ -1,36 +1,34 @@
 package com.speech4j.contentservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Set;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@AllArgsConstructor
 @Entity
-@Table(name = "contents")
-public class ContentBox {
+@Table(name = "tags")
+public class Tag {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String guid;
-    @OneToMany(mappedBy = "content")
-    @JsonManagedReference
-    private Set<Tag> tags;
-    private String contentUrl;
-    private String transcript;
-    private String tenantId;
+    private String name;
+    @ManyToOne(targetEntity = ContentBox.class, fetch = FetchType.LAZY)
+    @JoinColumn
+    @JsonBackReference
+    private ContentBox content;
 }

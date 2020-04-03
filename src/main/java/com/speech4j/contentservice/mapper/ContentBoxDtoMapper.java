@@ -10,7 +10,6 @@ public class ContentBoxDtoMapper implements AbstractEntityDtoMapper<ContentBoxRe
     @Override
     public ContentBox toEntity(ContentBoxRequestDto dto) {
         return ContentBox.builder()
-                .tags(dto.getTags())
                 .contentUrl(dto.getContentUrl())
                 .transcript(dto.getTranscript())
                 .tenantId(dto.getTenantId())
@@ -20,8 +19,7 @@ public class ContentBoxDtoMapper implements AbstractEntityDtoMapper<ContentBoxRe
     @Override
     public ContentBoxResponseDto toDto(ContentBox entity) {
         return ContentBoxResponseDto.builder()
-                .contentGuid(entity.getContentGuid())
-                .tags(entity.getTags())
+                .contentGuid(entity.getGuid())
                 .contentUrl(entity.getContentUrl())
                 .transcript(entity.getTranscript())
                 .tenantId(entity.getTenantId())
