@@ -25,42 +25,45 @@ import java.util.List;
 @RequestMapping("/api/tenants/{tenantId}/contents")
 public class ContentController {
 
-    private EntityService<ContentBox> service;
+    private EntityService<ContentBox> contentService;
+    private EntityService<Tag> tagService;
     private ContentBoxDtoMapper mapper;
 
     @Autowired
-    public ContentController(EntityService<ContentBox> service, ContentBoxDtoMapper mapper) {
-        this.service = service;
+    public ContentController(EntityService<ContentBox> contentService, EntityService<Tag> tagService, ContentBoxDtoMapper mapper) {
+        this.contentService = contentService;
+        this.tagService = tagService;
         this.mapper = mapper;
     }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ContentBoxResponseDto save(@RequestBody ContentBoxRequestDto dto) {
-        return mapper.toDto(service.create(mapper.toEntity(dto)));
+        return mapper.toDto(contentService.create(mapper.toEntity(dto)));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ContentBoxResponseDto findById(@PathVariable("id")String id) {
-        return mapper.toDto(service.findById(id));
+        return mapper.toDto(contentService.findById(id));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ContentBoxResponseDto update(@RequestBody ContentBoxRequestDto dto, String id) {
-        return mapper.toDto(service.update(mapper.toEntity(dto), id));
+        return mapper.toDto(contentService.update(mapper.toEntity(dto), id));
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ContentBoxResponseDto> findByTag(@PathVariable("tag") String tag) {
-        return mapper.toDtoList(service.findAllByTag(tag));
+        return mapper.toDtoList(contentService.findAllByTag(tag));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete( @PathVariable("id") String id) {
-        service.deleteById(id);
+        contentService.deleteById(id);
     }
 
 }
