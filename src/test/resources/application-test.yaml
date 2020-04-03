@@ -1,0 +1,10 @@
+# ===============================
+# DATABASE
+# ===============================
+spring:
+  profiles: test
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:tenant_db}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
