@@ -53,7 +53,7 @@ public class ContentController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ContentBoxResponseDto> findByTag(@PathVariable("tag") String tag) {
-        return mapper.toDtoList(service.findByTag(tag));
+        return mapper.toDtoList(service.findAllByTag(tag));
     }
 
     @DeleteMapping("/{id}")
