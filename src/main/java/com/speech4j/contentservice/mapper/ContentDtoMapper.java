@@ -1,16 +1,15 @@
 package com.speech4j.contentservice.mapper;
 
-import com.speech4j.contentservice.dto.request.ContentBoxRequestDto;
-import com.speech4j.contentservice.dto.response.ContentBoxResponseDto;
+import com.speech4j.contentservice.dto.request.ContentRequestDto;
+import com.speech4j.contentservice.dto.response.ContentResponseDto;
 import com.speech4j.contentservice.entity.ContentBox;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ContentBoxDtoMapper implements AbstractEntityDtoMapper<ContentBoxRequestDto, ContentBox, ContentBoxResponseDto> {
+public class ContentDtoMapper implements AbstractEntityDtoMapper<ContentRequestDto, ContentBox, ContentResponseDto> {
     @Override
-    public ContentBox toEntity(ContentBoxRequestDto dto) {
+    public ContentBox toEntity(ContentRequestDto dto) {
         return ContentBox.builder()
-                .tags(dto.getTags())
                 .contentUrl(dto.getContentUrl())
                 .transcript(dto.getTranscript())
                 .tenantId(dto.getTenantId())
@@ -18,9 +17,8 @@ public class ContentBoxDtoMapper implements AbstractEntityDtoMapper<ContentBoxRe
     }
 
     @Override
-    public ContentBoxResponseDto toDto(ContentBox entity) {
-        return ContentBoxResponseDto.builder()
-                .tags(entity.getTags())
+    public ContentResponseDto toDto(ContentBox entity) {
+        return ContentResponseDto.builder()
                 .contentGuid(entity.getGuid())
                 .contentUrl(entity.getContentUrl())
                 .transcript(entity.getTranscript())

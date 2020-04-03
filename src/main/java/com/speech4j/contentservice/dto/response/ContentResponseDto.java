@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ContentBoxResponseDto {
+public class ContentResponseDto {
     private String contentGuid;
     private Set<Tag> tags;
     private String contentUrl;

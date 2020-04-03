@@ -1,4 +1,4 @@
-package com.speech4j.contentservice;
+package com.speech4j.contentservice.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;

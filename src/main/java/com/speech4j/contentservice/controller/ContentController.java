@@ -1,10 +1,10 @@
 package com.speech4j.contentservice.controller;
 
-import com.speech4j.contentservice.dto.request.ContentBoxRequestDto;
-import com.speech4j.contentservice.dto.response.ContentBoxResponseDto;
+import com.speech4j.contentservice.dto.request.ContentRequestDto;
+import com.speech4j.contentservice.dto.response.ContentResponseDto;
 import com.speech4j.contentservice.entity.ContentBox;
 import com.speech4j.contentservice.entity.Tag;
-import com.speech4j.contentservice.mapper.ContentBoxDtoMapper;
+import com.speech4j.contentservice.mapper.ContentDtoMapper;
 import com.speech4j.contentservice.service.EntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,10 +28,10 @@ public class ContentController {
 
     private EntityService<ContentBox> contentService;
     private EntityService<Tag> tagService;
-    private ContentBoxDtoMapper mapper;
+    private ContentDtoMapper mapper;
 
     @Autowired
-    public ContentController(EntityService<ContentBox> contentService, EntityService<Tag> tagService, ContentBoxDtoMapper mapper) {
+    public ContentController(EntityService<ContentBox> contentService, EntityService<Tag> tagService, ContentDtoMapper mapper) {
         this.contentService = contentService;
         this.tagService = tagService;
         this.mapper = mapper;
@@ -39,25 +39,25 @@ public class ContentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ContentBoxResponseDto save(@RequestBody ContentBoxRequestDto dto) {
+    public ContentResponseDto save(@RequestBody ContentRequestDto dto) {
         return mapper.toDto(contentService.create(mapper.toEntity(dto)));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentBoxResponseDto findById(@PathVariable("id")String id) {
+    public ContentResponseDto findById(@PathVariable("id")String id) {
         return mapper.toDto(contentService.findById(id));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentBoxResponseDto update(@RequestBody ContentBoxRequestDto dto, String id) {
+    public ContentResponseDto update(@RequestBody ContentRequestDto dto, String id) {
         return mapper.toDto(contentService.update(mapper.toEntity(dto), id));
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ContentBoxResponseDto> findByTag(@RequestParam("tag") String tag) {
+    public List<ContentResponseDto> findByTag(@RequestParam("tag") String tag) {
         return mapper.toDtoList(contentService.findAllByTag(tag));
     }
 

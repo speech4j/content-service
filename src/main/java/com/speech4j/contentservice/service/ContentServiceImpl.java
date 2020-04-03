@@ -32,7 +32,6 @@ public class ContentServiceImpl implements EntityService<ContentBox>{
         ContentBox content = findByIdOrThrowException(id);
         content.setContentUrl(entity.getContentUrl());
         content.setTranscript(entity.getTranscript());
-        content.setTags(entity.getTags());
 
         return repository.save(content);
     }

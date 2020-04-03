@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ContentBoxRequestDto {
+public class ContentRequestDto {
     private Set<Tag> tags;
     private String contentUrl;
     private String transcript;
