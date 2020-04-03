@@ -6,18 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.nio.ByteBuffer;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Pair {
-    private String id;
-    private String tag;
-    private ByteBuffer audio;
-    private String url;
+public class ContentBox {
+    private String contentGuid;
+    private List<String> tags;
+    private String contentUrl;
     private String transcript;
+    // temporary field, planned to save in separate schema
     private String tenantId;
 }

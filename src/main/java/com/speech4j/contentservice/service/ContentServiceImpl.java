@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class PairServiceImpl implements EntityService{
+public class ContentServiceImpl implements EntityService{
     @Override
     public Object create(Object entity) {
         return null;

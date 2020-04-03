@@ -6,18 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.nio.ByteBuffer;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PairResponseDto {
-    private String id;
-    private String tag;
-    private ByteBuffer audio;
-    private String url;
+public class ContentBoxResponseDto {
+    private String contentGuid;
+    private List<String> tags;
+    private String contentUrl;
     private String transcript;
     private String tenantId;
 }

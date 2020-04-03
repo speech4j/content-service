@@ -1,9 +1,9 @@
 package com.speech4j.contentservice.controller;
 
-import com.speech4j.contentservice.dto.request.PairRequestDto;
-import com.speech4j.contentservice.dto.response.PairResponseDto;
-import com.speech4j.contentservice.entity.Pair;
-import com.speech4j.contentservice.mapper.PairDtoMapper;
+import com.speech4j.contentservice.dto.request.ContentBoxRequestDto;
+import com.speech4j.contentservice.dto.response.ContentBoxResponseDto;
+import com.speech4j.contentservice.entity.ContentBox;
+import com.speech4j.contentservice.mapper.ContentBoxDtoMapper;
 import com.speech4j.contentservice.service.EntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,37 +22,37 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tenants/{tenantId}/contents")
-public class PairController {
+public class ContentController {
 
-    private EntityService<Pair> service;
-    private PairDtoMapper mapper;
+    private EntityService<ContentBox> service;
+    private ContentBoxDtoMapper mapper;
 
     @Autowired
-    public PairController(EntityService<Pair> service, PairDtoMapper mapper) {
+    public ContentController(EntityService<ContentBox> service, ContentBoxDtoMapper mapper) {
         this.service = service;
         this.mapper = mapper;
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PairResponseDto save( @RequestBody PairRequestDto dto) {
+    public ContentBoxResponseDto save(@RequestBody ContentBoxRequestDto dto) {
         return mapper.toDto(service.create(mapper.toEntity(dto)));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PairResponseDto findById(String id) {
+    public ContentBoxResponseDto findById(String id) {
         return mapper.toDto(service.findById(id));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PairResponseDto update(@RequestBody PairRequestDto dto, String id) {
+    public ContentBoxResponseDto update(@RequestBody ContentBoxRequestDto dto, String id) {
         return mapper.toDto(service.update(mapper.toEntity(dto), id));
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<PairResponseDto> findByTag(@PathVariable("tag") String tag) {
+    public List<ContentBoxResponseDto> findByTag(@PathVariable("tag") String tag) {
         return mapper.toDtoList(service.findByTag(tag));
     }
 
