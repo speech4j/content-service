@@ -1,0 +1,34 @@
+# ===============================
+# Default connection pool
+# ===============================
+spring:
+  datasource:
+    hikari:
+      connectionTimeout: 2000
+      maximumPoolSize: 5
+---
+# ===============================
+# DATABASE
+# ===============================
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:content_db}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+---
+# ===============================
+# JPA / HIBERNATE
+# ===============================
+spring.jpa:show-sql: true
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL82Dialect
+        format_sql: true
+        generate_statistics: false
+---
