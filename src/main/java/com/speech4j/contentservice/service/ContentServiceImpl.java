@@ -1,7 +1,7 @@
 package com.speech4j.contentservice.service;
 
 import com.speech4j.contentservice.entity.ContentBox;
-import com.speech4j.contentservice.exception.ContentBoxNotFoundException;
+import com.speech4j.contentservice.exception.ContentNotFoundException;
 import com.speech4j.contentservice.repository.ContentBoxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +50,6 @@ public class ContentServiceImpl implements EntityService<ContentBox>{
     private ContentBox findByIdOrThrowException(String id) {
         //Checking if user is found
         return repository.findById(id)
-                .orElseThrow(() -> new ContentBoxNotFoundException("Content not found!"));
+                .orElseThrow(() -> new ContentNotFoundException("Content not found!"));
     }
 }

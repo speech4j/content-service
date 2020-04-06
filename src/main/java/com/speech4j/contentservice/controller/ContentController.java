@@ -5,6 +5,7 @@ import com.speech4j.contentservice.dto.response.ContentResponseDto;
 import com.speech4j.contentservice.entity.Compose;
 import com.speech4j.contentservice.entity.ContentBox;
 import com.speech4j.contentservice.entity.Tag;
+import com.speech4j.contentservice.exception.ContentNotFoundException;
 import com.speech4j.contentservice.mapper.ContentDtoMapper;
 import com.speech4j.contentservice.mapper.TagDtoMapper;
 import com.speech4j.contentservice.service.EntityService;
@@ -69,12 +70,17 @@ public class ContentController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ContentResponseDto findById(@PathVariable String tenantId, @PathVariable String id) {
-        return contentMapper.toDto(contentService.findById(id));
+        checkIfExist(tenantId, id);
+        return  contentMapper.toDto(contentService.findById(id));
+
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentResponseDto update(@RequestBody ContentRequestDto dto, String id) {
+    public ContentResponseDto update(@RequestBody ContentRequestDto dto,
+                                     @PathVariable String tenantId,
+                                     @PathVariable String id) {
+        checkIfExist(tenantId, id);
         return contentMapper.toDto(contentService.update(contentMapper.toEntity(dto), id));
     }
 
@@ -86,8 +92,16 @@ public class ContentController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete( @PathVariable("id") String id) {
+    public void delete(@PathVariable String tenantId, @PathVariable("id") String id) {
+        checkIfExist(tenantId, id);
         contentService.deleteById(id);
+    }
+
+    private void checkIfExist(String tenantId, String id){
+        ContentBox content = contentService.findById(id);
+        if (!content.getTenantId().equals(tenantId)) {
+            throw new ContentNotFoundException("Content not found!");
+        }
     }
 
 }
