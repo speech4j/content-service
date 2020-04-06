@@ -7,6 +7,8 @@ import com.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ContentServiceImpl implements ContentService {
     private ContentBoxRepository repository;
@@ -39,6 +41,11 @@ public class ContentServiceImpl implements ContentService {
     public void deleteById(String id) {
         findByIdOrThrowException(id);
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<ContentBox> findByTenantId(String tenantId) {
+        return repository.findByTenantId(tenantId);
     }
 
     private ContentBox findByIdOrThrowException(String id) {

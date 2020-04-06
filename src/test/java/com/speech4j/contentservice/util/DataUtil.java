@@ -7,13 +7,8 @@ import java.util.List;
 
 public class DataUtil {
 
-    public static List<ContentRequestDto> getListOfTenants() {
+    public static List<ContentRequestDto> getListOfContents() {
         List<ContentRequestDto> list = new ArrayList<>();
-
-        ContentRequestDto content1 = new ContentRequestDto();
-        list.add(content1);
-        ContentRequestDto content2 = new ContentRequestDto();
-        list.add(content2);
 
         return list;
     }

@@ -7,6 +7,8 @@ import com.speech4j.contentservice.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TagServiceImpl implements TagService {
     private TagRepository repository;
@@ -38,6 +40,11 @@ public class TagServiceImpl implements TagService {
     public void deleteById(String id) {
         findByIdOrThrowException(id);
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Tag> findAllByName(String name) {
+        return repository.findAllByName(name);
     }
 
     private Tag findByIdOrThrowException(String id) {

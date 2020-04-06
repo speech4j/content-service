@@ -98,8 +98,18 @@ public class ContentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ContentResponseDto> findByTag(@RequestParam("tag") String tag) {
-        return null;
+    public List<ContentResponseDto> findByTag( @PathVariable String tenantId, @RequestParam("tag") String tagName) {
+        //contentService.findByTenantId(tenantId);
+        List<Tag> tags = tagService.findAllByName(tagName);
+
+        List<ContentResponseDto> contents = new ArrayList<>();
+        tags.forEach(i->{
+            i.getComposeKey().forEach(j->{
+                contents.add(contentMapper.toDto(j.getContent()));
+            });
+        });
+
+        return contents ;
     }
 
     @DeleteMapping("/{id}")

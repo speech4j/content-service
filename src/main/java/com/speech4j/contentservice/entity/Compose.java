@@ -29,7 +29,6 @@ public class Compose {
     @ManyToOne
     @JoinColumn(name = "content_id")
     ContentBox content;
-
     @ManyToOne
     @JoinColumn(name = "tag_id")
     Tag tag;
