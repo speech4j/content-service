@@ -41,6 +41,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     private List<ContentResponseDto> contentListResponse;
 
     private String tenantId = "111";
+    private String contentId;
 
     @BeforeEach
     void setUp() throws URISyntaxException {
@@ -61,6 +62,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         //Populating of db
         contentList = getListOfContents();
         contentListResponse = populateDB(contentList);
+        contentId = contentListResponse.get(0).getContentGuid();
     }
 
     @Test
@@ -102,6 +104,32 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         //Verify this exception because of validation missed field
         assertEquals(400, response.getStatusCodeValue());
         assertEquals("Validation failed for object='contentRequestDto'. Error count: 1", response.getBody().getMessage());
+    }
+
+    @Test
+    public void findByIdTest_successFlow() {
+        request = new HttpEntity<>(headers);
+        ResponseEntity<ContentResponseDto> response
+                = template.exchange("/api/tenants/" +  tenantId + "/contents/" + contentId, HttpMethod.GET, request, ContentResponseDto.class);
+
+        //Verify request succeed
+        assertEquals(200, response.getStatusCodeValue());
+        assertThat(response.getBody()).isNotNull();
+    }
+
+    @Test
+    public void findByIdTest_unsuccessFlow() {
+        request = new HttpEntity<>(headers);
+        ResponseEntity<ResponseMessageDto> response
+                = template.exchange("/api/tenants/" +  tenantId + "/contents/" + 0, HttpMethod.GET, request, ResponseMessageDto.class);
+
+        //Verify request not succeed
+        checkEntityNotFoundException(response);
+    }
+
+    private void checkEntityNotFoundException(ResponseEntity<ResponseMessageDto> response){
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals(exceptionMessage, response.getBody().getMessage());
     }
 
     private List<ContentResponseDto> populateDB(List<ContentRequestDto> list) throws URISyntaxException {

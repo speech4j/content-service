@@ -4,9 +4,6 @@ import com.speech4j.contentservice.dto.request.TagDto;
 import com.speech4j.contentservice.entity.Tag;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Component
 public class TagDtoMapper implements AbstractEntityDtoMapper<TagDto, Tag, TagDto> {
     @Override
@@ -21,13 +18,5 @@ public class TagDtoMapper implements AbstractEntityDtoMapper<TagDto, Tag, TagDto
         return TagDto.builder()
                 .name(entity.getName())
                 .build();
-    }
-
-    public Set<Tag> toEntitySet(Set<TagDto> dtoSet) {
-        return dtoSet.stream().map(this::toEntity).collect(Collectors.toSet());
-    }
-
-    public Set<TagDto> toDtoSet(Set<Tag> entitySet) {
-        return entitySet.stream().map(this::toDto).collect(Collectors.toSet());
     }
 }

@@ -61,7 +61,7 @@ public class ContentController {
     @ResponseStatus(HttpStatus.OK)
     public ContentResponseDto findById(@PathVariable String tenantId, @PathVariable String id) {
         checkIfExist(tenantId, id);
-        return null;
+        return contentMapper.toDto(contentService.findById(id));
     }
 
     @PutMapping("/{id}")
