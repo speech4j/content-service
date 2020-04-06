@@ -1,5 +1,7 @@
 package com.speech4j.contentservice.dto.request;
 
+import com.speech4j.contentservice.dto.validation.ExistData;
+import com.speech4j.contentservice.dto.validation.NewData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Getter
@@ -17,10 +20,10 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 public class ContentRequestDto {
-    @NotBlank(message = "{field.not.empty}")
+    @NotEmpty(groups = {NewData.class, ExistData.class}, message = "{field.not.empty}")
     private List<TagDto> tags;
-    @NotBlank(message = "{field.not.empty}")
+    @NotBlank(groups = {NewData.class, ExistData.class}, message = "{field.not.empty}")
     private String contentUrl;
-    @NotBlank(message = "{field.not.empty}")
+    @NotBlank(groups = {NewData.class, ExistData.class}, message = "{field.not.empty}")
     private String transcript;
 }

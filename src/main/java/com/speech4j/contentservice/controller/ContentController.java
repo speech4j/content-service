@@ -2,6 +2,8 @@ package com.speech4j.contentservice.controller;
 
 import com.speech4j.contentservice.dto.request.ContentRequestDto;
 import com.speech4j.contentservice.dto.response.ContentResponseDto;
+import com.speech4j.contentservice.dto.validation.ExistData;
+import com.speech4j.contentservice.dto.validation.NewData;
 import com.speech4j.contentservice.entity.ContentBox;
 import com.speech4j.contentservice.entity.Tag;
 import com.speech4j.contentservice.exception.ContentNotFoundException;
@@ -11,6 +13,7 @@ import com.speech4j.contentservice.service.ContentService;
 import com.speech4j.contentservice.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,7 +50,8 @@ public class ContentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ContentResponseDto save(@PathVariable String tenantId, @RequestBody ContentRequestDto dto) {
+    public ContentResponseDto save(@PathVariable String tenantId,
+                                   @Validated({NewData.class}) @RequestBody ContentRequestDto dto) {
         ContentBox contentBox = contentMapper.toEntity(dto);
         contentBox.setTenantGuid(tenantId);
         return contentMapper.toDto(contentService.create(contentBox));
@@ -62,7 +66,7 @@ public class ContentController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentResponseDto update(@RequestBody ContentRequestDto dto,
+    public ContentResponseDto update(@Validated({ExistData.class}) @RequestBody ContentRequestDto dto,
                                      @PathVariable String tenantId,
                                      @PathVariable String id) {
         checkIfExist(tenantId, id);

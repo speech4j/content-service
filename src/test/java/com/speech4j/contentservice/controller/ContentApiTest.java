@@ -89,6 +89,21 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         assertEquals(400, response.getStatusCodeValue());
     }
 
+    @Test
+    public void createEntityTestWithMissedRequiredField_unsuccessFlow() {
+        final String url = "/api/tenants/" +  tenantId + "/contents";
+
+        testContent.setTranscript(null);
+        request = new HttpEntity<>(testContent, headers);
+
+        ResponseEntity<ResponseMessageDto> response =
+                this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
+
+        //Verify this exception because of validation missed field
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Validation failed for object='contentRequestDto'. Error count: 1", response.getBody().getMessage());
+    }
+
     private List<ContentResponseDto> populateDB(List<ContentRequestDto> list) throws URISyntaxException {
         final String url = "/api/tenants/" + tenantId + "/contents";
         URI uri = new URI(url);
