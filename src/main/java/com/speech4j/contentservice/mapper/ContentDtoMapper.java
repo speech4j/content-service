@@ -3,16 +3,20 @@ package com.speech4j.contentservice.mapper;
 import com.speech4j.contentservice.dto.request.ContentRequestDto;
 import com.speech4j.contentservice.dto.response.ContentResponseDto;
 import com.speech4j.contentservice.entity.ContentBox;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ContentDtoMapper implements AbstractEntityDtoMapper<ContentRequestDto, ContentBox, ContentResponseDto> {
+    @Autowired
+    TagDtoMapper mapper;
+
     @Override
     public ContentBox toEntity(ContentRequestDto dto) {
         return ContentBox.builder()
+                .tags(mapper.toEntityList(dto.getTags()))
                 .contentUrl(dto.getContentUrl())
                 .transcript(dto.getTranscript())
-                .tenantId(dto.getTenantId())
                 .build();
     }
 
@@ -20,9 +24,10 @@ public class ContentDtoMapper implements AbstractEntityDtoMapper<ContentRequestD
     public ContentResponseDto toDto(ContentBox entity) {
         return ContentResponseDto.builder()
                 .contentGuid(entity.getGuid())
+                .tags(mapper.toDtoList(entity.getTags()))
                 .contentUrl(entity.getContentUrl())
                 .transcript(entity.getTranscript())
-                .tenantId(entity.getTenantId())
+                .tenantId(entity.getTenantGuid())
                 .build();
     }
 }

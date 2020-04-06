@@ -10,9 +10,9 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,6 +27,6 @@ public class Tag {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String guid;
     private String name;
-    @OneToMany(mappedBy = "tag")
-    private Set<Compose> composeKey;
+    @ManyToMany(mappedBy = "tags")
+    private List<ContentBox> contents;
 }

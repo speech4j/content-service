@@ -7,12 +7,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,9 +29,14 @@ public class ContentBox {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String guid;
-    @OneToMany(mappedBy = "content")
-    private Set<Compose> composeKey;
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "content_tag",
+            joinColumns = { @JoinColumn(name = "content_guid") },
+            inverseJoinColumns = { @JoinColumn(name = "tag_guid") }
+    )
+    private List<Tag> tags;
     private String contentUrl;
     private String transcript;
-    private String tenantId;
+    private String tenantGuid;
 }

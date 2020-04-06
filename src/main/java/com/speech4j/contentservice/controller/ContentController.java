@@ -1,15 +1,12 @@
 package com.speech4j.contentservice.controller;
 
 import com.speech4j.contentservice.dto.request.ContentRequestDto;
-import com.speech4j.contentservice.dto.request.TagDto;
 import com.speech4j.contentservice.dto.response.ContentResponseDto;
-import com.speech4j.contentservice.entity.Compose;
 import com.speech4j.contentservice.entity.ContentBox;
 import com.speech4j.contentservice.entity.Tag;
 import com.speech4j.contentservice.exception.ContentNotFoundException;
 import com.speech4j.contentservice.mapper.ContentDtoMapper;
 import com.speech4j.contentservice.mapper.TagDtoMapper;
-import com.speech4j.contentservice.service.ComposeService;
 import com.speech4j.contentservice.service.ContentService;
 import com.speech4j.contentservice.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,56 +31,33 @@ public class ContentController {
 
     private ContentService contentService;
     private TagService tagService;
-    private ComposeService composeService;
     private ContentDtoMapper contentMapper;
     private TagDtoMapper tagMapper;
 
     @Autowired
     public ContentController(ContentService contentService,
                             TagService tagService,
-                            ComposeService composeService,
                             ContentDtoMapper contentMapper,
                             TagDtoMapper tagMapper) {
         this.contentService = contentService;
         this.tagService = tagService;
-        this.composeService = composeService;
         this.contentMapper = contentMapper;
         this.tagMapper = tagMapper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ContentResponseDto save(@RequestBody ContentRequestDto dto) {
-        ContentBox content = contentService.create(contentMapper.toEntity(dto));
-        List<Tag> tags = tagMapper.toEntityList(dto.getTags());
-
-        tags.forEach((i)->{
-            Tag createdTag = tagService.create(i);
-
-            Compose compose = new Compose();
-            compose.setContent(content);
-            compose.setTag(createdTag);
-            composeService.create(compose);
-        });
-
-        ContentResponseDto responseDto = contentMapper.toDto(content);
-        responseDto.setTags(tagMapper.toDtoList(tags));
-        return responseDto;
+    public ContentResponseDto save(@PathVariable String tenantId, @RequestBody ContentRequestDto dto) {
+        ContentBox contentBox = contentMapper.toEntity(dto);
+        contentBox.setTenantGuid(tenantId);
+        return contentMapper.toDto(contentService.create(contentBox));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ContentResponseDto findById(@PathVariable String tenantId, @PathVariable String id) {
         checkIfExist(tenantId, id);
-        List<Compose> composes = composeService.findAllByContentId(id);
-        List<TagDto> tags = new ArrayList<>();
-        composes.forEach((i) ->{
-            tags.add(tagMapper.toDto(i.getTag()));
-        });
-
-        ContentResponseDto responseDto = contentMapper.toDto(contentService.findById(id));
-        responseDto.setTags(tags);
-        return responseDto;
+        return null;
     }
 
     @PutMapping("/{id}")
@@ -101,15 +74,7 @@ public class ContentController {
     public List<ContentResponseDto> findByTag( @PathVariable String tenantId, @RequestParam("tag") String tagName) {
         //contentService.findByTenantId(tenantId);
         List<Tag> tags = tagService.findAllByName(tagName);
-
-        List<ContentResponseDto> contents = new ArrayList<>();
-        tags.forEach(i->{
-            i.getComposeKey().forEach(j->{
-                contents.add(contentMapper.toDto(j.getContent()));
-            });
-        });
-
-        return contents ;
+        return null ;
     }
 
     @DeleteMapping("/{id}")
@@ -121,7 +86,7 @@ public class ContentController {
 
     private void checkIfExist(String tenantId, String id){
         ContentBox content = contentService.findById(id);
-        if (!content.getTenantId().equals(tenantId)) {
+        if (!content.getTenantGuid().equals(tenantId)) {
             throw new ContentNotFoundException("Content not found!");
         }
     }

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ContentBoxRepository extends CrudRepository<ContentBox, String> {
-    List<ContentBox> findByTenantId(String tenantId);
+    List<ContentBox> findByTenantGuid(String tenantId);
 }
