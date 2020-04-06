@@ -1,6 +1,7 @@
 package com.speech4j.contentservice.controller;
 
 import com.speech4j.contentservice.ContentServiceApplication;
+import com.speech4j.contentservice.dto.handler.ResponseMessageDto;
 import com.speech4j.contentservice.dto.request.ContentRequestDto;
 import com.speech4j.contentservice.dto.request.TagDto;
 import com.speech4j.contentservice.dto.response.ContentResponseDto;
@@ -72,6 +73,20 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         //Verify request succeed
         assertEquals(201, response.getStatusCodeValue());
         assertThat(response.getBody()).isNotNull();
+    }
+
+    @Test
+    public void createEntityTest_unsuccessFlow() {
+        final String url =  "/api/tenants/" +  tenantId + "/contents";
+
+        //Make entity null
+        request = new HttpEntity<>(null, headers);
+
+        ResponseEntity<ResponseMessageDto> response =
+                this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
+
+        //Verify this exception because of validation null entity can't be accepted by controller
+        assertEquals(400, response.getStatusCodeValue());
     }
 
     private List<ContentResponseDto> populateDB(List<ContentRequestDto> list) throws URISyntaxException {
