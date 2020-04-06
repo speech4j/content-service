@@ -1,15 +1,16 @@
-package com.speech4j.contentservice.service;
+package com.speech4j.contentservice.service.impl;
 
 import com.speech4j.contentservice.entity.Compose;
 import com.speech4j.contentservice.exception.ComposeNotFoundException;
 import com.speech4j.contentservice.repository.ComposeRepository;
+import com.speech4j.contentservice.service.ComposeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class ComposeServiceImpl  implements EntityService<Compose> {
+public class ComposeServiceImpl  implements ComposeService {
     private ComposeRepository repository;
 
     @Autowired
@@ -34,14 +35,19 @@ public class ComposeServiceImpl  implements EntityService<Compose> {
     }
 
     @Override
-    public List<Compose> findAllByTag(String tag) {
-        return null;
-    }
-
-    @Override
     public void deleteById(String id) {
         findByIdOrThrowException(id);
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Compose> findAllByContentId(String contentId){
+        return repository.findAllByContentGuid(contentId);
+    }
+
+    @Override
+    public List<Compose> findAllByTagId(String tagId){
+        return repository.findAllByTagGuid(tagId);
     }
 
     private Compose findByIdOrThrowException(String id) {

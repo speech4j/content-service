@@ -1,6 +1,7 @@
 package com.speech4j.contentservice.controller;
 
 import com.speech4j.contentservice.dto.request.ContentRequestDto;
+import com.speech4j.contentservice.dto.request.TagDto;
 import com.speech4j.contentservice.dto.response.ContentResponseDto;
 import com.speech4j.contentservice.entity.Compose;
 import com.speech4j.contentservice.entity.ContentBox;
@@ -8,7 +9,9 @@ import com.speech4j.contentservice.entity.Tag;
 import com.speech4j.contentservice.exception.ContentNotFoundException;
 import com.speech4j.contentservice.mapper.ContentDtoMapper;
 import com.speech4j.contentservice.mapper.TagDtoMapper;
-import com.speech4j.contentservice.service.EntityService;
+import com.speech4j.contentservice.service.ComposeService;
+import com.speech4j.contentservice.service.ContentService;
+import com.speech4j.contentservice.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,27 +25,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 
 @RestController
 @RequestMapping("/api/tenants/{tenantId}/contents")
 public class ContentController {
 
-    private EntityService<ContentBox> contentService;
-    private EntityService<Tag> tagService;
-    private EntityService<Compose> composeService;
+    private ContentService contentService;
+    private TagService tagService;
+    private ComposeService composeService;
     private ContentDtoMapper contentMapper;
     private TagDtoMapper tagMapper;
 
     @Autowired
-    public ContentController(EntityService<ContentBox> contentService,
-                             EntityService<Tag> tagService,
-                             EntityService<Compose> composeService,
-                             ContentDtoMapper contentMapper,
-                             TagDtoMapper tagMapper) {
+    public ContentController(ContentService contentService,
+                            TagService tagService,
+                            ComposeService composeService,
+                            ContentDtoMapper contentMapper,
+                            TagDtoMapper tagMapper) {
         this.contentService = contentService;
         this.tagService = tagService;
         this.composeService = composeService;
@@ -54,7 +56,7 @@ public class ContentController {
     @ResponseStatus(HttpStatus.CREATED)
     public ContentResponseDto save(@RequestBody ContentRequestDto dto) {
         ContentBox content = contentService.create(contentMapper.toEntity(dto));
-        Set<Tag> tags = tagMapper.toEntitySet(dto.getTags());
+        List<Tag> tags = tagMapper.toEntityList(dto.getTags());
 
         tags.forEach((i)->{
             Tag createdTag = tagService.create(i);
@@ -62,11 +64,11 @@ public class ContentController {
             Compose compose = new Compose();
             compose.setContent(content);
             compose.setTag(createdTag);
-           composeService.create(compose);
+            composeService.create(compose);
         });
 
         ContentResponseDto responseDto = contentMapper.toDto(content);
-        responseDto.setTags(tagMapper.toDtoSet(tags));
+        responseDto.setTags(tagMapper.toDtoList(tags));
         return responseDto;
     }
 
@@ -74,8 +76,15 @@ public class ContentController {
     @ResponseStatus(HttpStatus.OK)
     public ContentResponseDto findById(@PathVariable String tenantId, @PathVariable String id) {
         checkIfExist(tenantId, id);
-        return  contentMapper.toDto(contentService.findById(id));
+        List<Compose> composes = composeService.findAllByContentId(id);
+        List<TagDto> tags = new ArrayList<>();
+        composes.forEach((i) ->{
+            tags.add(tagMapper.toDto(i.getTag()));
+        });
 
+        ContentResponseDto responseDto = contentMapper.toDto(contentService.findById(id));
+        responseDto.setTags(tags);
+        return responseDto;
     }
 
     @PutMapping("/{id}")
@@ -90,7 +99,7 @@ public class ContentController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ContentResponseDto> findByTag(@RequestParam("tag") String tag) {
-        return contentMapper.toDtoList(contentService.findAllByTag(tag));
+        return null;
     }
 
     @DeleteMapping("/{id}")

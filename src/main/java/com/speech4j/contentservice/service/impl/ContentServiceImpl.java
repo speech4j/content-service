@@ -1,15 +1,14 @@
-package com.speech4j.contentservice.service;
+package com.speech4j.contentservice.service.impl;
 
 import com.speech4j.contentservice.entity.ContentBox;
 import com.speech4j.contentservice.exception.ContentNotFoundException;
 import com.speech4j.contentservice.repository.ContentBoxRepository;
+import com.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class ContentServiceImpl implements EntityService<ContentBox>{
+public class ContentServiceImpl implements ContentService {
     private ContentBoxRepository repository;
 
     @Autowired
@@ -34,11 +33,6 @@ public class ContentServiceImpl implements EntityService<ContentBox>{
         content.setTranscript(entity.getTranscript());
 
         return repository.save(content);
-    }
-
-    @Override
-    public List<ContentBox> findAllByTag(String tag) {
-        return null;
     }
 
     @Override
