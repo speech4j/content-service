@@ -26,4 +26,8 @@ public class TagDtoMapper implements AbstractEntityDtoMapper<TagDto, Tag, TagDto
     public Set<Tag> toEntitySet(Set<TagDto> dtoSet) {
         return dtoSet.stream().map(this::toEntity).collect(Collectors.toSet());
     }
+
+    public Set<TagDto> toDtoSet(Set<Tag> entitySet) {
+        return entitySet.stream().map(this::toDto).collect(Collectors.toSet());
+    }
 }

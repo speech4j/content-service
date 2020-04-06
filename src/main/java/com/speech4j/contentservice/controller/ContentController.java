@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 
 @RestController
@@ -61,10 +62,12 @@ public class ContentController {
             Compose compose = new Compose();
             compose.setContent(content);
             compose.setTag(createdTag);
-            composeService.create(compose);
+           composeService.create(compose);
         });
 
-        return contentMapper.toDto(content);
+        ContentResponseDto responseDto = contentMapper.toDto(content);
+        responseDto.setTags(tagMapper.toDtoSet(tags));
+        return responseDto;
     }
 
     @GetMapping("/{id}")
