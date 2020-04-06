@@ -45,7 +45,11 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public List<ContentBox> findByTenantId(String tenantId) {
-        return repository.findByTenantGuid(tenantId);
+        List<ContentBox> contents = repository.findByTenantGuid(tenantId);
+        if (contents.isEmpty()){
+            new ContentNotFoundException("Content not found!");
+        }
+        return contents;
     }
 
     private ContentBox findByIdOrThrowException(String id) {

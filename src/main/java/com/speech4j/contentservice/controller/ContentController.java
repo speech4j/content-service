@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -76,9 +77,16 @@ public class ContentController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ContentResponseDto> findByTag( @PathVariable String tenantId, @RequestParam("tag") String tagName) {
-        //contentService.findByTenantId(tenantId);
+        contentService.findByTenantId(tenantId);
         List<Tag> tags = tagService.findAllByName(tagName);
-        return null ;
+        List<ContentBox> contents = new ArrayList<>();
+
+        tags.forEach(i->{
+            i.getContents().forEach(j->{
+                contents.add(j);
+            });
+        });
+        return contentMapper.toDtoList(contents) ;
     }
 
     @DeleteMapping("/{id}")
