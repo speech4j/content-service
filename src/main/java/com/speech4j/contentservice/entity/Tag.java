@@ -1,6 +1,7 @@
 package com.speech4j.contentservice.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "tags")
 public class Tag {
     @Id
@@ -26,5 +28,5 @@ public class Tag {
     private String guid;
     private String name;
     @OneToMany(mappedBy = "tag")
-    private Set<ContentTag> composeKey;
+    private Set<Compose> composeKey;
 }

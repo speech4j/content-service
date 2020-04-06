@@ -11,4 +11,8 @@ public interface AbstractEntityDtoMapper<D, E, R> {
     default List<R> toDtoList(List<E> entityList) {
         return entityList.stream().map(this::toDto).collect(Collectors.toList());
     }
+
+    default List<E> toEntityList(List<D> dtoList) {
+        return dtoList.stream().map(this::toEntity).collect(Collectors.toList());
+    }
 }

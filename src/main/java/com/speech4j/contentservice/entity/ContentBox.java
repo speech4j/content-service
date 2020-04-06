@@ -27,7 +27,7 @@ public class ContentBox {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String guid;
     @OneToMany(mappedBy = "content")
-    private Set<ContentTag> composeKey;
+    private Set<Compose> composeKey;
     private String contentUrl;
     private String transcript;
     private String tenantId;
