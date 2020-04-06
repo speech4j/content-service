@@ -127,6 +127,60 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         checkEntityNotFoundException(response);
     }
 
+    @Test
+    public void updateEntityTest_successFlow() {
+        final String url = "/api/tenants/" +  tenantId + "/contents/" + contentId;
+
+        testContent.setTranscript("New test");
+        request = new HttpEntity<>(testContent, headers);
+
+        ResponseEntity<ContentResponseDto> response =
+                this.template.exchange(url, HttpMethod.PUT, request, ContentResponseDto.class);
+
+        //Verify request succeed
+        assertEquals(200, response.getStatusCodeValue());
+        assertThat(response.getBody()).isNotNull();
+    }
+
+    @Test
+    public void updateEntityTest_unsuccessFlow() {
+        final String url = "/api/tenants/" +  tenantId + "/contents/" + 0;
+
+        testContent.setTranscript("New test");
+        request = new HttpEntity<>(testContent, headers);
+
+        ResponseEntity<ResponseMessageDto> response =
+                this.template.exchange(url, HttpMethod.PUT, request, ResponseMessageDto.class);
+
+        //Verify request not succeed
+        checkEntityNotFoundException(response);
+    }
+
+    @Test
+    public void deleteEntity_successFlow() {
+        final String url = "/api/tenants/" +  tenantId + "/contents/" + contentId;
+
+        request = new HttpEntity<>(headers);
+        ResponseEntity<ResponseMessageDto> response
+                = template.exchange(url, HttpMethod.DELETE, request, ResponseMessageDto.class);
+
+        //Checking if entity was deleted
+        assertEquals(204, response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void deleteEntity_unsuccessFlow() {
+        final String url = "/api/tenants/" +  tenantId + "/contents/" + 0;
+
+        request = new HttpEntity<>(headers);
+        ResponseEntity<ResponseMessageDto> response
+                = template.exchange(url, HttpMethod.DELETE, request, ResponseMessageDto.class);
+
+        //Verify request not succeed
+        checkEntityNotFoundException(response);
+    }
+
     private void checkEntityNotFoundException(ResponseEntity<ResponseMessageDto> response){
         assertEquals(404, response.getStatusCodeValue());
         assertEquals(exceptionMessage, response.getBody().getMessage());

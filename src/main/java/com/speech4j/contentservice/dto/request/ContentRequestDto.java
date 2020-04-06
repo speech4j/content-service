@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -19,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class ContentRequestDto {
     @NotEmpty(groups = {NewData.class, ExistData.class}, message = "{field.not.empty}")
     private List<TagDto> tags;
