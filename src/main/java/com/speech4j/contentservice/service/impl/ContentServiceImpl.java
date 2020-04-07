@@ -47,7 +47,7 @@ public class ContentServiceImpl implements ContentService {
     public List<ContentBox> findByTenantId(String tenantId) {
         List<ContentBox> contents = repository.findByTenantGuid(tenantId);
         if (contents.isEmpty()){
-            new ContentNotFoundException("Content not found!");
+            throw new ContentNotFoundException("Content not found!");
         }
         return contents;
     }
