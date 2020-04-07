@@ -68,7 +68,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    public void createEntityTest_successFlow() {
+    public void createContentTest_successFlow() {
         final String url = "/api/tenants/" +  tenantId + "/contents";
 
         ResponseEntity<ContentResponseDto> response =
@@ -80,7 +80,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    public void createEntityTest_unsuccessFlow() {
+    public void createContentTest_unsuccessFlow() {
         final String url =  "/api/tenants/" +  tenantId + "/contents";
 
         //Make entity null
@@ -94,7 +94,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    public void createEntityTestWithMissedRequiredField_unsuccessFlow() {
+    public void createContentTestWithMissedRequiredField_unsuccessFlow() {
         final String url = "/api/tenants/" +  tenantId + "/contents";
 
         testContent.setTranscript(null);
@@ -147,7 +147,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    public void updateEntityTest_unsuccessFlow() {
+    public void updateContentTest_unsuccessFlow() {
         final String url = "/api/tenants/" +  tenantId + "/contents/" + 0;
 
         testContent.setTranscript("New test");
@@ -161,7 +161,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    public void deleteEntity_successFlow() {
+    public void deleteContent_successFlow() {
         final String url = "/api/tenants/" +  tenantId + "/contents/" + contentId;
 
         request = new HttpEntity<>(headers);

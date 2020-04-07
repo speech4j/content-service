@@ -11,7 +11,7 @@ public class MessageValidationConfig {
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages");
+        messageSource.setBasename("classpath:i18m/messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
