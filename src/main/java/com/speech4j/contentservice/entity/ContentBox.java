@@ -2,9 +2,11 @@ package com.speech4j.contentservice.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.CascadeType;
@@ -23,6 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode
 @Table(name = "contents")
 public class ContentBox {
     @Id

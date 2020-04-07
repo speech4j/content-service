@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
@@ -20,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
+@ToString
 @Table(name = "tags")
 public class Tag {
     @Id

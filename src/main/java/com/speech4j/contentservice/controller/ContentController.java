@@ -5,12 +5,9 @@ import com.speech4j.contentservice.dto.response.ContentResponseDto;
 import com.speech4j.contentservice.dto.validation.ExistData;
 import com.speech4j.contentservice.dto.validation.NewData;
 import com.speech4j.contentservice.entity.ContentBox;
-import com.speech4j.contentservice.entity.Tag;
 import com.speech4j.contentservice.exception.ContentNotFoundException;
 import com.speech4j.contentservice.mapper.ContentDtoMapper;
-import com.speech4j.contentservice.mapper.TagDtoMapper;
 import com.speech4j.contentservice.service.ContentService;
-import com.speech4j.contentservice.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -34,19 +32,13 @@ import java.util.List;
 public class ContentController {
 
     private ContentService contentService;
-    private TagService tagService;
     private ContentDtoMapper contentMapper;
-    private TagDtoMapper tagMapper;
 
     @Autowired
     public ContentController(ContentService contentService,
-                            TagService tagService,
-                            ContentDtoMapper contentMapper,
-                            TagDtoMapper tagMapper) {
+                            ContentDtoMapper contentMapper) {
         this.contentService = contentService;
-        this.tagService = tagService;
         this.contentMapper = contentMapper;
-        this.tagMapper = tagMapper;
     }
 
     @PostMapping
@@ -76,17 +68,18 @@ public class ContentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ContentResponseDto> findByTag( @PathVariable String tenantId, @RequestParam("tag") String tagName) {
+    public Set<ContentResponseDto> findByTag(@PathVariable String tenantId, @RequestParam List<String> tagNames) {
         contentService.findByTenantId(tenantId);
-        List<Tag> tags = tagService.findAllByName(tagName);
-        List<ContentBox> contents = new ArrayList<>();
 
-        tags.forEach(i->{
-            i.getContents().forEach(j->{
-                contents.add(j);
+        List<ContentBox> contents = new ArrayList<>();
+        tagNames.forEach(i->{
+            contentService.findAllByName(i).forEach(tag->{
+                tag.getContents().forEach(content->{
+                    contents.add(content);
+                });
             });
         });
-        return contentMapper.toDtoList(contents) ;
+        return contentMapper.toDtoSet(contents);
     }
 
     @DeleteMapping("/{id}")
