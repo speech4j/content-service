@@ -49,15 +49,6 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<ContentBox> findByTenantId(String tenantId) {
-        List<ContentBox> contents = contentRepository.findByTenantGuid(tenantId);
-        if (contents.isEmpty()){
-            throw new ContentNotFoundException("Content not found!");
-        }
-        return contents;
-    }
-
-    @Override
     public List<Tag> findAllByName(String name) {
         return tagRepository.findAllByName(name);
     }

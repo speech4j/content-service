@@ -15,12 +15,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static com.speech4j.contentservice.util.DataUtil.getListOfContents;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,6 +114,8 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         ResponseEntity<ContentResponseDto> response
                 = template.exchange("/api/tenants/" +  tenantId + "/contents/" + contentId, HttpMethod.GET, request, ContentResponseDto.class);
 
+        System.out.println(response.getBody());
+
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
         assertThat(response.getBody()).isNotNull();
@@ -177,9 +181,42 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         ResponseEntity<ResponseMessageDto> response
                 = template.exchange(url, HttpMethod.DELETE, request, ResponseMessageDto.class);
 
-        //Verify request not succeed
+        //Verify request isn't succeed
         checkEntityNotFoundException(response);
     }
+
+    @Test
+    public void findByTagsTest_successFlow() {
+        request = new HttpEntity<>(headers);
+        String url = "/api/tenants/" +  tenantId + "/contents";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
+                .queryParam("tagNames", "#nightcore, #music");
+
+        ResponseEntity<Set> response = template.exchange(
+                builder.build().encode().toUri(),
+                HttpMethod.GET, request, Set.class);
+
+        //Verify request succeed
+        assertEquals(200, response.getStatusCodeValue());
+        assertThat(response.getBody()).isNotNull();
+        assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    public void findByTagsTest_unsuccessFlow() {
+        request = new HttpEntity<>(headers);
+        String url = "/api/tenants/" +  tenantId + "/contents";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
+                .queryParam("tagNames", "#fakeTag");
+
+        ResponseEntity<ResponseMessageDto> response = template.exchange(
+                builder.build().encode().toUri(),
+                HttpMethod.GET, request, ResponseMessageDto.class);
+
+        //Verify request isn't succeed
+        checkEntityNotFoundException(response);
+    }
+
 
     private void checkEntityNotFoundException(ResponseEntity<ResponseMessageDto> response){
         assertEquals(404, response.getStatusCodeValue());

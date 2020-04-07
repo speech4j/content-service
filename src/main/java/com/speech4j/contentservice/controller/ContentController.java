@@ -68,17 +68,21 @@ public class ContentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Set<ContentResponseDto> findByTag(@PathVariable String tenantId, @RequestParam List<String> tagNames) {
-        contentService.findByTenantId(tenantId);
-
+    public Set<ContentResponseDto> findByTags(@PathVariable String tenantId, @RequestParam List<String> tagNames) {
         List<ContentBox> contents = new ArrayList<>();
         tagNames.forEach(i->{
             contentService.findAllByName(i).forEach(tag->{
                 tag.getContents().forEach(content->{
-                    contents.add(content);
+                    if (content.getTenantGuid().equals(tenantId)){
+                        contents.add(content);
+                    }
                 });
             });
         });
+
+        if (contents.isEmpty()){
+            throw new ContentNotFoundException("Content not found!");
+        }
         return contentMapper.toDtoSet(contents);
     }
 
