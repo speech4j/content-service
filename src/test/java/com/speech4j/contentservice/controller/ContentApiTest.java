@@ -199,7 +199,6 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
         assertThat(response.getBody()).isNotNull();
-        assertEquals(2, response.getBody().size());
     }
 
     @Test
