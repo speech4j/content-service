@@ -1,26 +1,22 @@
 package org.speech4j.contentservice.service.impl;
 
 import org.speech4j.contentservice.entity.ContentBox;
-import org.speech4j.contentservice.entity.Tag;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.repository.ContentBoxRepository;
-import org.speech4j.contentservice.repository.TagRepository;
 import org.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ContentServiceImpl implements ContentService {
     private ContentBoxRepository contentRepository;
-    private TagRepository tagRepository;
 
     @Autowired
-    public ContentServiceImpl(ContentBoxRepository contentRepository,
-                              TagRepository tagRepository) {
+    public ContentServiceImpl(ContentBoxRepository contentRepository) {
         this.contentRepository = contentRepository;
-        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -49,8 +45,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<Tag> findAllByName(String name) {
-        return tagRepository.findAllByName(name);
+    public List<ContentBox> findAllByTags(String tenantId, Set<String> tags) {
+        return contentRepository.findAllByTags(tenantId, tags);
     }
 
     private ContentBox findByIdOrThrowException(String id) {

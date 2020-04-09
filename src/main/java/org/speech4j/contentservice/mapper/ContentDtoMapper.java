@@ -6,10 +6,6 @@ import org.speech4j.contentservice.entity.ContentBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Component
 public class ContentDtoMapper implements AbstractEntityDtoMapper<ContentRequestDto, ContentBox, ContentResponseDto> {
     @Autowired
@@ -34,9 +30,4 @@ public class ContentDtoMapper implements AbstractEntityDtoMapper<ContentRequestD
                 .tenantId(entity.getTenantGuid())
                 .build();
     }
-
-    public Set<ContentResponseDto> toDtoSet(List<ContentBox> entitySet) {
-        return entitySet.stream().map(this::toDto).collect(Collectors.toSet());
-    }
-
 }

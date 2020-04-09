@@ -5,6 +5,7 @@ import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.dto.validation.ExistData;
 import org.speech4j.contentservice.dto.validation.NewData;
 import org.speech4j.contentservice.entity.ContentBox;
+import org.speech4j.contentservice.entity.Tag;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.mapper.ContentDtoMapper;
 import org.speech4j.contentservice.service.ContentService;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -68,22 +70,12 @@ public class ContentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Set<ContentResponseDto> findByTags(@PathVariable String tenantId, @RequestParam List<String> tagNames) {
-        List<ContentBox> contents = new ArrayList<>();
-        tagNames.forEach(i->{
-            contentService.findAllByName(i).forEach(tag->{
-                tag.getContents().forEach(content->{
-                    if (content.getTenantGuid().equals(tenantId)){
-                        contents.add(content);
-                    }
-                });
-            });
-        });
-
+    public List<ContentResponseDto> findByTags(@PathVariable String tenantId, @RequestParam Set<String> tagNames) {
+        List<ContentBox> contents = contentService.findAllByTags(tenantId, tagNames);
         if (contents.isEmpty()){
             throw new ContentNotFoundException("Content not found!");
         }
-        return contentMapper.toDtoSet(contents);
+        return contentMapper.toDtoList(contents);
     }
 
     @DeleteMapping("/{id}")
