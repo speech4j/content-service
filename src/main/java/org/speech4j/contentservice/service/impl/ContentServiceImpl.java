@@ -1,15 +1,14 @@
 package org.speech4j.contentservice.service.impl;
 
-import io.vavr.control.Either;
 import org.speech4j.contentservice.dto.response.ConfigDto;
+import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.entity.ContentBox;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
-import org.speech4j.contentservice.exception.TenantServiceException;
 import org.speech4j.contentservice.repository.ContentBoxRepository;
 import org.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,9 @@ import java.util.Set;
 
 @Service
 public class ContentServiceImpl implements ContentService {
+    @Value(value = "${remote.tenant-service.url}")
+    private String remoteServiceURL;
+
     private ContentBoxRepository contentRepository;
     private RestTemplate template;
 
@@ -67,14 +69,9 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private List<ConfigDto> getAllConfigByTenantId(String tenantId){
-        String url = "http://localhost:8081/tenants/" + tenantId + "/configs";
-
-        HttpEntity<ConfigDto> request = new HttpEntity<>(new HttpHeaders());
-        Either<ResponseEntity, List> response = (Either<ResponseEntity, List>) template.exchange(url, HttpMethod.GET, request, List.class, ResponseEntity.class);
-
-        if (response.isLeft()) {
-            throw new TenantServiceException(String.valueOf(response.getLeft().getBody()));
-        }
-        return response.get();
+        System.setProperty("remote.tenant-service.tenant-id", tenantId);
+        String url = remoteServiceURL;
+        ResponseEntity<List<ConfigDto>> response = template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ConfigDto>>(){});
+        return response.getBody();
     }
 }

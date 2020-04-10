@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "apiName": "Google",
+    "username": "string",
+    "password": "string"
+  },
+  {
+    "id": "2",
+    "apiName": "AWS",
+    "username": "string",
+    "password": "string"
+  }
+]
