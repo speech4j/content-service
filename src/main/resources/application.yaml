@@ -41,5 +41,4 @@ springdoc:
 
 remote:
   tenant-service:
-    tenant-id: string
-    url: http://localhost:8082/tenants/${remote.tenant-service.tenant-id}/contents
+    url: http://localhost:8082/tenants/
