@@ -24,6 +24,15 @@ The content-service for uploading an etalon pair to AWS S3.
  * `java -jar build/libs/*.jar` -- run the project
  - docker:
  * `docker build .` - build docker image
- * `docker run image` - run app
+ * `docker run image-name` - run app
  
+## Running DB Instructions
+ * create and run db container locally
+ ```
+ docker run --name postgres-docker \
+                 -e POSTGRES_PASSWORD=postgres \
+                 -e POSTGRES_USERNAME=postgres \
+                 -e POSTGRES_DB=content_db \
+                 -p 5434:5434 -d postgres
+ ```
  
