@@ -5,12 +5,12 @@ import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.dto.validation.ExistData;
 import org.speech4j.contentservice.dto.validation.NewData;
 import org.speech4j.contentservice.entity.ContentBox;
-import org.speech4j.contentservice.entity.Tag;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.mapper.ContentDtoMapper;
 import org.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -83,6 +85,20 @@ public class ContentController {
     public void delete(@PathVariable String tenantId, @PathVariable("id") String id) {
         checkIfExist(tenantId, id);
         contentService.deleteById(id);
+    }
+
+    @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public String uploadAudioFile(@RequestParam("file") MultipartFile file){
+        try {
+            File convertFile = new File(file.getOriginalFilename());
+            convertFile.createNewFile();
+            FileOutputStream fileOutputStream = new FileOutputStream(convertFile);
+            fileOutputStream.write(file.getBytes());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return "File uploaded successfully";
     }
 
     private void checkIfExist(String tenantId, String id){
