@@ -7,7 +7,6 @@ import org.speech4j.contentservice.dto.validation.NewData;
 import org.speech4j.contentservice.entity.ContentBox;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.mapper.ContentDtoMapper;
-import org.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

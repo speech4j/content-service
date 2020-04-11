@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class ContentServiceImpl implements ContentService {
+public class ContentServiceImpl implements ContentService<ContentBox> {
     @Value(value = "${remote.tenant-service.url}")
     private String remoteServiceURL;
 
