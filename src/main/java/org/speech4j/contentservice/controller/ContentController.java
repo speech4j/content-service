@@ -77,7 +77,7 @@ public class ContentController {
     @ResponseStatus(HttpStatus.OK)
     public List<ContentResponseDto> findByTags(@PathVariable String tenantId,
                                                @RequestParam Set<String> tagNames,
-    @PageableDefault(sort = {"guid"}, direction = Sort.Direction.ASC) Pageable pageable) {
+    @PageableDefault(page = 0, size = 10, sort = {"guid"}, direction = Sort.Direction.ASC) Pageable pageable) {
         List<ContentBox> contents = contentService.findAllByTags(tenantId, tagNames, pageable);
         if (contents.isEmpty()){
             throw new ContentNotFoundException("Content not found!");
