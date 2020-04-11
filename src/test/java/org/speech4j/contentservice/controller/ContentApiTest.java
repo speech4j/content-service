@@ -34,6 +34,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.speech4j.contentservice.util.DataUtil.getListOfContents;
+import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomNumeric;
 
 
 @SpringBootTest(classes = ContentServiceApplication.class,
@@ -232,6 +233,41 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         ResponseEntity<ResponseMessageDto> response = template.exchange(
                 builder.build().encode().toUri(),
                 HttpMethod.GET, request, ResponseMessageDto.class);
+
+        //Verify request isn't succeed
+        checkEntityNotFoundException(response);
+    }
+
+    @Test
+    public void findByTagsPageableTest_successFlowWhen200IsReceived() {
+        String url = "/api/tenants/" +  tenantId + "/contents";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
+                .queryParam("tagNames", "#nightcore, #music")
+                .queryParam("page", 0)
+                .queryParam("size",2);
+
+        ResponseEntity<List<ContentResponseDto>> response = template.exchange(
+                builder.build().encode().toUri(),
+                HttpMethod.GET, null , new ParameterizedTypeReference<List<ContentResponseDto>>(){});
+
+        //Verify request succeed
+        assertEquals(200, response.getStatusCodeValue());
+        //Verify two records are retrieved
+        assertEquals(2,response.getBody().size());
+        assertThat(response.getBody()).isNotNull();
+    }
+
+    @Test
+    public void findByTagsPageableTest_unsuccessFlowWhen404IsReceived() {
+        String url = "/api/tenants/" +  tenantId + "/contents";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
+                .queryParam("tagNames", "#fakeTag")
+                .queryParam("page", randomNumeric(5))
+                .queryParam("size",2);
+
+        ResponseEntity<ResponseMessageDto> response = template.exchange(
+                builder.build().encode().toUri(),
+                HttpMethod.GET, null, ResponseMessageDto.class);
 
         //Verify request isn't succeed
         checkEntityNotFoundException(response);
