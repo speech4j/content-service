@@ -9,6 +9,9 @@ import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.mapper.ContentDtoMapper;
 import org.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -72,8 +75,10 @@ public class ContentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ContentResponseDto> findByTags(@PathVariable String tenantId, @RequestParam Set<String> tagNames) {
-        List<ContentBox> contents = contentService.findAllByTags(tenantId, tagNames);
+    public List<ContentResponseDto> findByTags(@PathVariable String tenantId,
+                                               @RequestParam Set<String> tagNames,
+    @PageableDefault(sort = {"guid"}, direction = Sort.Direction.ASC) Pageable pageable) {
+        List<ContentBox> contents = contentService.findAllByTags(tenantId, tagNames, pageable);
         if (contents.isEmpty()){
             throw new ContentNotFoundException("Content not found!");
         }

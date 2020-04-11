@@ -8,6 +8,7 @@ import org.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -57,8 +58,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<ContentBox> findAllByTags(String tenantId, Set<String> tags) {
-        return contentRepository.findAllByTags(tenantId, tags);
+    public List<ContentBox> findAllByTags(String tenantId, Set<String> tags, Pageable pageable) {
+        return contentRepository.findAllByTags(tenantId, tags, pageable);
     }
 
     private ContentBox findByIdOrThrowException(String id) {
@@ -67,9 +68,10 @@ public class ContentServiceImpl implements ContentService {
                 .orElseThrow(() -> new ContentNotFoundException("Content not found!"));
     }
 
-    private List<ConfigDto> getAllConfigByTenantId(String tenantId){
+    private List<ConfigDto> getAllConfigByTenantId(String tenantId) {
         String url = remoteServiceURL + tenantId + "/configs";
-        ResponseEntity<List<ConfigDto>> response = template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ConfigDto>>(){});
+        ResponseEntity<List<ConfigDto>> response =
+                template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ConfigDto>>() {});
         return response.getBody();
     }
 }
