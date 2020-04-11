@@ -261,7 +261,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     public void findByTagsPageableTest_unsuccessFlowWhen404IsReceived() {
         String url = "/api/tenants/" +  tenantId + "/contents";
         UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
-                .queryParam("tagNames", "#fakeTag")
+                .queryParam("tagNames", "#nightcore, music")
                 .queryParam("page", randomNumeric(5))
                 .queryParam("size",2);
 
