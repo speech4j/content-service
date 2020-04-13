@@ -4,4 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface S3Service {
     String uploadAudioFile(String tenantId, MultipartFile file);
+
+    void deleteFolder(String bucketName, String folderName);
 }

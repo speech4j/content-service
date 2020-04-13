@@ -1,10 +1,8 @@
 package org.speech4j.contentservice.service.impl;
 
 import com.amazonaws.SdkClientException;
-import com.amazonaws.services.mediaconvert.model.S3ServerSideEncryptionType;
 import com.amazonaws.services.s3.AmazonS3;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.speech4j.contentservice.exception.InternalServerException;
 import org.speech4j.contentservice.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class S3ServiceImpl implements S3Service {
@@ -24,7 +23,6 @@ public class S3ServiceImpl implements S3Service {
     private String endpointUrl;
 
     private AmazonS3 amazonS3;
-    private static final Logger LOGGER = LoggerFactory.getLogger(S3ServiceImpl.class);
 
     @Autowired
     public S3ServiceImpl(AmazonS3 amazonS3) {
@@ -47,6 +45,16 @@ public class S3ServiceImpl implements S3Service {
             throw new InternalServerException("AWS server error!");
         }
         return fileUrl;
+    }
+
+    @Override
+    public void deleteFolder(String bucketName, String folderName) {
+        List fileList = amazonS3.listObjects(bucketName, folderName).getObjectSummaries();
+        for (Object object : fileList) {
+            S3ObjectSummary file = (S3ObjectSummary) object;
+            amazonS3.deleteObject(bucketName, file.getKey());
+        }
+        amazonS3.deleteObject(bucketName, folderName);
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
