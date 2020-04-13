@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.speech4j.contentservice.ContentServiceApplication;
+import org.speech4j.contentservice.config.RestResponsePage;
 import org.speech4j.contentservice.dto.handler.ResponseMessageDto;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.request.TagDto;
@@ -132,9 +133,8 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @Test
     public void findByIdTest_successFlow() {
-        request = new HttpEntity<>(headers);
         ResponseEntity<ContentResponseDto> response
-                = template.exchange("/api/tenants/" +  tenantId + "/contents/" + contentId, HttpMethod.GET, request, ContentResponseDto.class);
+                = template.exchange("/api/tenants/" +  tenantId + "/contents/" + contentId, HttpMethod.GET, null, ContentResponseDto.class);
 
         System.out.println(response.getBody());
 
@@ -145,9 +145,8 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @Test
     public void findByIdTest_unsuccessFlow() {
-        request = new HttpEntity<>(headers);
         ResponseEntity<ResponseMessageDto> response
-                = template.exchange("/api/tenants/" +  tenantId + "/contents/" + 0, HttpMethod.GET, request, ResponseMessageDto.class);
+                = template.exchange("/api/tenants/" +  tenantId + "/contents/" + 0, HttpMethod.GET, null, ResponseMessageDto.class);
 
         //Verify request not succeed
         checkEntityNotFoundException(response);
@@ -186,9 +185,8 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     public void deleteContent_successFlow() {
         final String url = "/api/tenants/" +  tenantId + "/contents/" + contentId;
 
-        request = new HttpEntity<>(headers);
         ResponseEntity<ResponseMessageDto> response
-                = template.exchange(url, HttpMethod.DELETE, request, ResponseMessageDto.class);
+                = template.exchange(url, HttpMethod.DELETE, null, ResponseMessageDto.class);
 
         //Checking if entity was deleted
         assertEquals(204, response.getStatusCodeValue());
@@ -199,9 +197,8 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     public void deleteEntity_unsuccessFlow() {
         final String url = "/api/tenants/" +  tenantId + "/contents/" + 0;
 
-        request = new HttpEntity<>(headers);
         ResponseEntity<ResponseMessageDto> response
-                = template.exchange(url, HttpMethod.DELETE, request, ResponseMessageDto.class);
+                = template.exchange(url, HttpMethod.DELETE, null, ResponseMessageDto.class);
 
         //Verify request isn't succeed
         checkEntityNotFoundException(response);
@@ -209,14 +206,13 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @Test
     public void findByTagsTest_successFlow() {
-        request = new HttpEntity<>(headers);
         String url = "/api/tenants/" +  tenantId + "/contents";
         UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music");
 
-        ResponseEntity<List<ContentResponseDto>> response = template.exchange(
+        ResponseEntity<RestResponsePage<ContentResponseDto>> response = template.exchange(
                 builder.build().encode().toUri(),
-                HttpMethod.GET, request, new ParameterizedTypeReference<List<ContentResponseDto>>(){});
+                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<ContentResponseDto>>(){});
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
@@ -225,14 +221,13 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @Test
     public void findByTagsTest_unsuccessFlow() {
-        request = new HttpEntity<>(headers);
         String url = "/api/tenants/" +  tenantId + "/contents";
         UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#fakeTag");
 
         ResponseEntity<ResponseMessageDto> response = template.exchange(
                 builder.build().encode().toUri(),
-                HttpMethod.GET, request, ResponseMessageDto.class);
+                HttpMethod.GET, null, ResponseMessageDto.class);
 
         //Verify request isn't succeed
         checkEntityNotFoundException(response);
@@ -246,14 +241,14 @@ public class ContentApiTest extends AbstractContainerBaseTest {
                 .queryParam("page", 0)
                 .queryParam("size",2);
 
-        ResponseEntity<List<ContentResponseDto>> response = template.exchange(
+        ResponseEntity<RestResponsePage<ContentResponseDto>> response = template.exchange(
                 builder.build().encode().toUri(),
-                HttpMethod.GET, null , new ParameterizedTypeReference<List<ContentResponseDto>>(){});
+                HttpMethod.GET, null , new ParameterizedTypeReference<RestResponsePage<ContentResponseDto>>(){});
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
         //Verify two records are retrieved
-        assertEquals(2,response.getBody().size());
+        assertEquals(2,response.getBody().getSize());
         assertThat(response.getBody()).isNotNull();
     }
 
