@@ -96,9 +96,17 @@ public class ContentController {
 
     @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public String uploadAudioFile(@RequestPart("file") MultipartFile file,
+    public String uploadAudioFile(@PathVariable String tenantId,
+                                  @RequestPart MultipartFile file,
                                   @RequestPart ContentRequestDto dto){
-        String url = s3Service.uploadAudioFile("1", file);
+        String url = s3Service.uploadAudioFile(tenantId, file);
+
+        ContentBox contentBox = contentMapper.toEntity(dto);
+        contentBox.setTenantGuid(tenantId);
+        contentBox.setContentUrl(url);
+        //Saving to db content item with a particular url
+        contentService.create(contentBox);
+
         return "File uploaded successfully";
     }
 

@@ -34,7 +34,7 @@ public class ContentServiceImpl implements ContentService<ContentBox> {
 
     @Override
     public ContentBox create(ContentBox entity) {
-        List<ConfigDto> configs = getAllConfigByTenantId(entity.getTenantGuid());
+        //List<ConfigDto> configs = getAllConfigByTenantId(entity.getTenantGuid());
         return contentRepository.save(entity);
     }
 
