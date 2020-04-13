@@ -1,6 +1,5 @@
 package org.speech4j.contentservice.service.impl;
 
-import com.amazonaws.services.s3.AmazonS3;
 import org.speech4j.contentservice.dto.response.ConfigDto;
 import org.speech4j.contentservice.entity.ContentBox;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
@@ -73,7 +72,7 @@ public class ContentServiceImpl implements ContentService<ContentBox> {
     private List<ConfigDto> getAllConfigByTenantId(String tenantId) {
         String url = remoteServiceURL + tenantId + "/configs";
         ResponseEntity<List<ConfigDto>> response =
-                template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>(){});
+                template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ConfigDto>>(){});
         return response.getBody();
     }
 }
