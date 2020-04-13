@@ -1,5 +1,6 @@
 package org.speech4j.contentservice.controller;
 
+import org.jboss.logging.Logger;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.dto.validation.ExistData;
@@ -33,11 +34,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import static org.hibernate.bytecode.BytecodeLogger.LOGGER;
+
 
 @RestController
 @RequestMapping("/api/tenants/{tenantId}/contents")
 public class ContentController {
 
+    Logger logger = Logger.getLogger(ContentController.class);
     private ContentService<ContentBox> contentService;
     private ContentDtoMapper contentMapper;
 
@@ -95,13 +99,10 @@ public class ContentController {
     @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public String uploadAudioFile(@RequestParam("file") MultipartFile file){
-        try {
-            File convertFile = new File(file.getOriginalFilename());
-            convertFile.createNewFile();
-            FileOutputStream fileOutputStream = new FileOutputStream(convertFile);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(file.getOriginalFilename()))){
             fileOutputStream.write(file.getBytes());
         }catch (IOException e){
-            e.printStackTrace();
+            logger.debug(e);
         }
         return "File uploaded successfully";
     }
