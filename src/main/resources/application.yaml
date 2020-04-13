@@ -42,3 +42,11 @@ springdoc:
 remote:
   tenant-service:
     url: http://localhost:8082/tenants/
+
+# ===============================
+# S3
+# ===============================
+aws:
+  accessKey: AKIA2JLHKQCPETFM4J7D
+  secretKey: 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
+  bucketName: speech4j-content-bucket

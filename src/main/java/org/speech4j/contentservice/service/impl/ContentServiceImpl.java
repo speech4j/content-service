@@ -1,5 +1,6 @@
 package org.speech4j.contentservice.service.impl;
 
+import com.amazonaws.services.s3.AmazonS3;
 import org.speech4j.contentservice.dto.response.ConfigDto;
 import org.speech4j.contentservice.entity.ContentBox;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
@@ -25,10 +26,13 @@ public class ContentServiceImpl implements ContentService<ContentBox> {
 
     private ContentBoxRepository contentRepository;
     private RestTemplate template;
+    private AmazonS3 amazonS3;
 
     @Autowired
-    public ContentServiceImpl(ContentBoxRepository contentRepository) {
+    public ContentServiceImpl(ContentBoxRepository contentRepository,
+                              AmazonS3 amazonS3) {
         this.contentRepository = contentRepository;
+        this.amazonS3 = amazonS3;
         this.template = new RestTemplate();
     }
 
