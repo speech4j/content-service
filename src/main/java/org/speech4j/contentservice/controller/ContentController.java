@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -95,7 +96,8 @@ public class ContentController {
 
     @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public String uploadAudioFile(@RequestParam("file") MultipartFile file){
+    public String uploadAudioFile(@RequestPart("file") MultipartFile file,
+                                  @RequestPart ContentRequestDto dto){
         String url = s3Service.uploadAudioFile("1", file);
         return "File uploaded successfully";
     }
