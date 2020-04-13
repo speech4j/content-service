@@ -51,3 +51,15 @@ aws:
   secretKey: ElIwuD+eUa0UXbkE9NZJlcbdBIWlwqNa8X+dHLJp
   bucketName: speech4j-content-bucket
   endpointUrl: https://speech4j-content-bucket.s3.us-east-2.amazonaws.com/
+
+# ===============================
+# MULTIPART (MultipartProperties)
+# ===============================
+  # Enable multipart uploads
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 128MB
+      max-request-size: 150MB

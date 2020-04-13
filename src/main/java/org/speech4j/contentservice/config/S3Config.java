@@ -35,7 +35,7 @@ public class S3Config {
                 .withRegion(Regions.US_EAST_2)
                 .build();
 
-        if(s3client.doesBucketExist(bucketName)) {
+        if(s3client.doesBucketExistV2(bucketName)) {
             LOGGER.info("Bucket name is not available."
                     + " Try again with a different Bucket name.");
         }
