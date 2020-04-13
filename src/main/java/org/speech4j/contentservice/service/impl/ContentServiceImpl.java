@@ -26,13 +26,10 @@ public class ContentServiceImpl implements ContentService<ContentBox> {
 
     private ContentBoxRepository contentRepository;
     private RestTemplate template;
-    private AmazonS3 amazonS3;
 
     @Autowired
-    public ContentServiceImpl(ContentBoxRepository contentRepository,
-                              AmazonS3 amazonS3) {
+    public ContentServiceImpl(ContentBoxRepository contentRepository) {
         this.contentRepository = contentRepository;
-        this.amazonS3 = amazonS3;
         this.template = new RestTemplate();
     }
 
@@ -76,7 +73,7 @@ public class ContentServiceImpl implements ContentService<ContentBox> {
     private List<ConfigDto> getAllConfigByTenantId(String tenantId) {
         String url = remoteServiceURL + tenantId + "/configs";
         ResponseEntity<List<ConfigDto>> response =
-                template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ConfigDto>>() {});
+                template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>(){});
         return response.getBody();
     }
 }

@@ -15,5 +15,4 @@ public interface ContentService<E> {
     void deleteById(String id);
 
     Page<E> findAllByTags(String tenantId, Set<String> tags, Pageable pageable);
-
 }

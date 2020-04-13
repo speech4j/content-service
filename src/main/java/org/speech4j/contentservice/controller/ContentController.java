@@ -1,6 +1,5 @@
 package org.speech4j.contentservice.controller;
 
-import org.jboss.logging.Logger;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.dto.validation.ExistData;
@@ -9,6 +8,7 @@ import org.speech4j.contentservice.entity.ContentBox;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.mapper.ContentDtoMapper;
 import org.speech4j.contentservice.service.ContentService;
+import org.speech4j.contentservice.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,9 +29,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Set;
 
 
@@ -39,15 +36,17 @@ import java.util.Set;
 @RequestMapping("/api/tenants/{tenantId}/contents")
 public class ContentController {
 
-    Logger logger = Logger.getLogger(ContentController.class);
     private ContentService<ContentBox> contentService;
     private ContentDtoMapper contentMapper;
+    private S3Service s3Service;
 
     @Autowired
     public ContentController(ContentService contentService,
-                            ContentDtoMapper contentMapper) {
+                             ContentDtoMapper contentMapper,
+                             S3Service s3Service) {
         this.contentService = contentService;
         this.contentMapper = contentMapper;
+        this.s3Service = s3Service;
     }
 
     @PostMapping
@@ -97,12 +96,7 @@ public class ContentController {
     @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public String uploadAudioFile(@RequestParam("file") MultipartFile file){
-        //ToDo remove later replacing the upload to S3
-        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(file.getOriginalFilename()))){
-            fileOutputStream.write(file.getBytes());
-        }catch (IOException e){
-            logger.debug(e);
-        }
+        String url = s3Service.uploadAudioFile("1", file);
         return "File uploaded successfully";
     }
 
