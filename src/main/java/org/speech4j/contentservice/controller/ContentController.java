@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import static org.hibernate.bytecode.BytecodeLogger.LOGGER;
-
 
 @RestController
 @RequestMapping("/api/tenants/{tenantId}/contents")
@@ -99,6 +97,7 @@ public class ContentController {
     @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public String uploadAudioFile(@RequestParam("file") MultipartFile file){
+        //ToDo remove later replacing the upload to S3
         try (FileOutputStream fileOutputStream = new FileOutputStream(new File(file.getOriginalFilename()))){
             fileOutputStream.write(file.getBytes());
         }catch (IOException e){
