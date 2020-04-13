@@ -4,6 +4,7 @@ import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.entity.ContentBox;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,5 +30,9 @@ public class ContentDtoMapper implements AbstractEntityDtoMapper<ContentRequestD
                 .transcript(entity.getTranscript())
                 .tenantId(entity.getTenantGuid())
                 .build();
+    }
+
+    public Page<ContentResponseDto> toDtoPage(Page<ContentBox> entityPage) {
+        return entityPage.map(this::toDto);
     }
 }

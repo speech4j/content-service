@@ -8,6 +8,7 @@ import org.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +59,7 @@ public class ContentServiceImpl implements ContentService<ContentBox> {
     }
 
     @Override
-    public List<ContentBox> findAllByTags(String tenantId, Set<String> tags, Pageable pageable) {
+    public Page<ContentBox> findAllByTags(String tenantId, Set<String> tags, Pageable pageable) {
         return contentRepository.findAllByTags(tenantId, tags, pageable);
     }
 

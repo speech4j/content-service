@@ -1,8 +1,8 @@
 package org.speech4j.contentservice.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Set;
 
 public interface ContentService<E> {
@@ -14,6 +14,6 @@ public interface ContentService<E> {
 
     void deleteById(String id);
 
-    List<E> findAllByTags(String tenantId, Set<String> tags, Pageable pageable);
+    Page<E> findAllByTags(String tenantId, Set<String> tags, Pageable pageable);
 
 }
