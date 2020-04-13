@@ -63,9 +63,3 @@ spring:
       file-size-threshold: 2KB
       max-file-size: 128MB
       max-request-size: 150MB
-
-# ===============================
-# GRADLE
-# ===============================
-org.gradle.daemon=true
-org.gradle.parallel=true
