@@ -1,6 +1,5 @@
 package org.speech4j.contentservice.dto.response;
 
-import org.speech4j.contentservice.dto.request.TagDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -8,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.speech4j.contentservice.dto.request.TagDto;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class ContentResponseDto {
+public class ContentResponseDto extends RepresentationModel<ContentResponseDto> {
     private String contentGuid;
     private List<TagDto> tags;
     private String contentUrl;

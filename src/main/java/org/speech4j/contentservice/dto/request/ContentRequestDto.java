@@ -1,7 +1,5 @@
 package org.speech4j.contentservice.dto.request;
 
-import org.speech4j.contentservice.dto.validation.ExistData;
-import org.speech4j.contentservice.dto.validation.NewData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -9,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.speech4j.contentservice.dto.validation.ExistData;
+import org.speech4j.contentservice.dto.validation.NewData;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;

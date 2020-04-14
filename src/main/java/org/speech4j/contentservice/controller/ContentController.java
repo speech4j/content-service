@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -29,8 +30,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Set;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 @RestController
@@ -56,14 +61,18 @@ public class ContentController {
                                    @Validated({NewData.class}) @RequestBody ContentRequestDto dto) {
         ContentBox contentBox = contentMapper.toEntity(dto);
         contentBox.setTenantGuid(tenantId);
-        return contentMapper.toDto(contentService.create(contentBox));
+
+        return contentMapper.toDto(contentService.create(contentBox))
+                .add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString()));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ContentResponseDto findById(@PathVariable String tenantId, @PathVariable String id) {
         checkIfExist(tenantId, id);
-        return contentMapper.toDto(contentService.findById(id));
+
+        return contentMapper.toDto(contentService.findById(id))
+                .add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString()));
     }
 
     @PutMapping("/{id}")
@@ -72,7 +81,8 @@ public class ContentController {
                                      @PathVariable String tenantId,
                                      @PathVariable String id) {
         checkIfExist(tenantId, id);
-        return contentMapper.toDto(contentService.update(contentMapper.toEntity(dto), id));
+        return contentMapper.toDto(contentService.update(contentMapper.toEntity(dto), id))
+                .add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString()));
     }
 
     @GetMapping
