@@ -26,7 +26,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "contents")
-public class ContentBox extends RepresentationModel<ContentBox> {
+public class ContentBox {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")

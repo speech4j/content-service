@@ -1,7 +1,7 @@
 package org.speech4j.contentservice.util;
 
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
-import org.speech4j.contentservice.dto.request.TagDto;
+import org.speech4j.contentservice.dto.TagDto;
 
 import java.util.ArrayList;
 import java.util.Arrays;

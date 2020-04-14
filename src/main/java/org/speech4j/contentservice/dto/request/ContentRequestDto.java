@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.speech4j.contentservice.dto.TagDto;
 import org.speech4j.contentservice.dto.validation.ExistData;
 import org.speech4j.contentservice.dto.validation.NewData;
 

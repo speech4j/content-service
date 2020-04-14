@@ -1,4 +1,4 @@
-package org.speech4j.contentservice.dto.request;
+package org.speech4j.contentservice.dto;
 
 import org.speech4j.contentservice.dto.validation.ExistData;
 import org.speech4j.contentservice.dto.validation.NewData;

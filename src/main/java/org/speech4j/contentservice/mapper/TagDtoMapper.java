@@ -1,6 +1,6 @@
 package org.speech4j.contentservice.mapper;
 
-import org.speech4j.contentservice.dto.request.TagDto;
+import org.speech4j.contentservice.dto.TagDto;
 import org.speech4j.contentservice.entity.Tag;
 import org.springframework.stereotype.Component;
 

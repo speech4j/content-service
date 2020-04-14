@@ -14,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -34,9 +36,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Set;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 
 @RestController
 @RequestMapping("/api/tenants/{tenantId}/contents")
@@ -45,14 +44,17 @@ public class ContentController {
     private ContentService<ContentBox> contentService;
     private ContentDtoMapper contentMapper;
     private S3Service s3Service;
+    private PagedResourcesAssembler<ContentBox> pagedResourcesAssembler;
 
     @Autowired
     public ContentController(ContentService contentService,
                              ContentDtoMapper contentMapper,
-                             S3Service s3Service) {
+                             S3Service s3Service,
+                             PagedResourcesAssembler<ContentBox> pagedResourcesAssembler) {
         this.contentService = contentService;
         this.contentMapper = contentMapper;
         this.s3Service = s3Service;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
     @PostMapping
@@ -87,14 +89,19 @@ public class ContentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<ContentResponseDto> findByTags(@PathVariable String tenantId,
-                                               @RequestParam Set<String> tagNames,
-    @PageableDefault(page = 0, size = 10, sort = {"guid"}, direction = Sort.Direction.ASC) Pageable pageable) {
+    public PagedModel<ContentResponseDto> findAllByTags(
+            @PathVariable String tenantId,
+            @RequestParam Set<String> tagNames,
+            @PageableDefault(page = 0, size = 2, sort = {"guid"}, direction = Sort.Direction.ASC) Pageable pageable) {
+
         Page<ContentBox> contents = contentService.findAllByTags(tenantId, tagNames, pageable);
         if (contents.isEmpty()){
             throw new ContentNotFoundException("Content not found!");
         }
-        return contentMapper.toDtoPage(contents);
+        PagedModel<ContentResponseDto> models = pagedResourcesAssembler
+                .toModel(contents, contentMapper);
+
+        return models;
     }
 
     @DeleteMapping("/{id}")
