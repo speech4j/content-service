@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -24,9 +25,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@EqualsAndHashCode
 @Table(name = "contents")
-public class ContentBox {
+public class ContentBox extends RepresentationModel<ContentBox> {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
