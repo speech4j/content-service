@@ -1,10 +1,10 @@
 package org.speech4j.contentservice.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 
@@ -25,11 +25,12 @@ public class DataSourceConfig {
 
     @Bean
     public DataSource getDatasource() {
-        return DataSourceBuilder.create()
-                .driverClassName(driverClassName)
-                .url(url)
-                .username(username)
-                .password(password)
-                .build();
+        HikariConfig dataSourceConfig = new HikariConfig();
+        dataSourceConfig.setDriverClassName(driverClassName);
+        dataSourceConfig.setJdbcUrl(url);
+        dataSourceConfig.setUsername(username);
+        dataSourceConfig.setPassword(password);
+
+        return new HikariDataSource(dataSourceConfig);
     }
 }
