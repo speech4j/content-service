@@ -1,10 +1,11 @@
 # ===============================
 # DATABASE
 # ===============================
-spring:
-  profiles: test
-  datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:content_db}
-    username: ${POSTGRES_USERNAME:postgres}
-    password: ${POSTGRES_PASSWORD:postgres}
+db:
+  driver: org.postgresql.Driver
+  host: localhost
+  port: 5432
+  name: content_db
+  url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
+  username: postgres
+  password: postgres

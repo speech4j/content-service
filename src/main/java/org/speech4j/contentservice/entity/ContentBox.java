@@ -2,13 +2,15 @@ package org.speech4j.contentservice.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.hateoas.RepresentationModel;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -30,7 +32,7 @@ public class ContentBox implements Serializable {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String guid;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
             name = "content_tag",
             joinColumns = { @JoinColumn(name = "content_guid") },

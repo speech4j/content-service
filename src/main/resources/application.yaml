@@ -1,3 +1,8 @@
+spring:
+  main:
+    lazy-initialization: true
+    allow-bean-definition-overriding: true
+---
 # ===============================
 # Default connection pool
 # ===============================
@@ -17,7 +22,7 @@ db:
   name: content_db
   url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
   username: postgres
-  password: qwerty123
+  password: postgres
 ---
 # ===============================
 # JPA / HIBERNATE

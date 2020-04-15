@@ -17,7 +17,7 @@ public class AbstractContainerBaseTest {
                 .withDatabaseName("tenant_db");
         postgreSQLContainer.start();
 
-        System.setProperty("spring.datasource.url", postgreSQLContainer.getJdbcUrl());
+        System.setProperty("db.url", postgreSQLContainer.getJdbcUrl());
     }
 
     @Test
