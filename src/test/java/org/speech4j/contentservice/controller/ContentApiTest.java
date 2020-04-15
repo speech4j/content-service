@@ -16,12 +16,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.testcontainers.shaded.okhttp3.Response;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,6 +36,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.speech4j.contentservice.util.DataUtil.getListOfContents;
 import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomNumeric;
 
@@ -210,9 +213,9 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music");
 
-        ResponseEntity<RestResponsePage<ContentResponseDto>> response = template.exchange(
+        ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(
                 builder.build().encode().toUri(),
-                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<ContentResponseDto>>(){});
+                HttpMethod.GET, null, new ParameterizedTypeReference<PagedModel<ContentResponseDto>>(){});
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
@@ -241,15 +244,12 @@ public class ContentApiTest extends AbstractContainerBaseTest {
                 .queryParam("page", 0)
                 .queryParam("size",2);
 
-        ResponseEntity<RestResponsePage<ContentResponseDto>> response = template.exchange(
+        ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(
                 builder.build().encode().toUri(),
-                HttpMethod.GET, null , new ParameterizedTypeReference<RestResponsePage<ContentResponseDto>>(){});
+                HttpMethod.GET, null , new ParameterizedTypeReference<PagedModel<ContentResponseDto>>(){});
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
-        //Verify two records are retrieved
-        assertEquals(2,response.getBody().getSize());
-        assertThat(response.getBody()).isNotNull();
     }
 
     @Test
