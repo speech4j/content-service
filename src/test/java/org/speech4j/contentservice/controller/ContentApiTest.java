@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.speech4j.contentservice.ContentServiceApplication;
-import org.speech4j.contentservice.config.RestResponsePage;
 import org.speech4j.contentservice.dto.TagDto;
 import org.speech4j.contentservice.dto.handler.ResponseMessageDto;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
@@ -23,7 +22,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.testcontainers.shaded.okhttp3.Response;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,7 +34,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.speech4j.contentservice.util.DataUtil.getListOfContents;
 import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomNumeric;
 
@@ -139,8 +136,6 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         ResponseEntity<ContentResponseDto> response
                 = template.exchange("/api/tenants/" +  tenantId + "/contents/" + contentId, HttpMethod.GET, null, ContentResponseDto.class);
 
-        System.out.println(response.getBody());
-
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
         assertThat(response.getBody()).isNotNull();
@@ -156,7 +151,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
     @Test
-    public void updateEntityTest_successFlow() {
+    public void updateContentTest_successFlow() {
         final String url = "/api/tenants/" +  tenantId + "/contents/" + contentId;
 
         testContent.setTranscript("New test");
@@ -210,11 +205,12 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     @Test
     public void findByTagsTest_successFlow() {
         String url = "/api/tenants/" +  tenantId + "/contents";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
-                .queryParam("tagNames", "#nightcore, #music");
+        URI uri = UriComponentsBuilder.fromPath(url)
+                .queryParam("tagNames", "#nightcore, #music")
+                .build().encode().toUri();
 
         ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(
-                builder.build().encode().toUri(),
+                uri,
                 HttpMethod.GET, null, new ParameterizedTypeReference<PagedModel<ContentResponseDto>>(){});
 
         //Verify request succeed
@@ -225,11 +221,12 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     @Test
     public void findByTagsTest_unsuccessFlow() {
         String url = "/api/tenants/" +  tenantId + "/contents";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
-                .queryParam("tagNames", "#fakeTag");
+        URI uri = UriComponentsBuilder.fromPath(url)
+                .queryParam("tagNames", "#fakeTag")
+                .build().encode().toUri();
 
         ResponseEntity<ResponseMessageDto> response = template.exchange(
-                builder.build().encode().toUri(),
+                uri,
                 HttpMethod.GET, null, ResponseMessageDto.class);
 
         //Verify request isn't succeed
@@ -239,13 +236,14 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     @Test
     public void findByTagsPageableTest_successFlowWhen200IsReceived() {
         String url = "/api/tenants/" +  tenantId + "/contents";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
+        URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
                 .queryParam("page", 0)
-                .queryParam("size",2);
+                .queryParam("size",2)
+                .build().encode().toUri();
 
         ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(
-                builder.build().encode().toUri(),
+                uri,
                 HttpMethod.GET, null , new ParameterizedTypeReference<PagedModel<ContentResponseDto>>(){});
 
         //Verify request succeed
@@ -255,19 +253,23 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     @Test
     public void findByTagsPageableTest_unsuccessFlowWhen404IsReceived() {
         String url = "/api/tenants/" +  tenantId + "/contents";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(url)
-                .queryParam("tagNames", "#nightcore, music")
+        URI uri = UriComponentsBuilder.fromPath(url)
+                .queryParam("tagNames", "#nightcore, #music")
                 .queryParam("page", randomNumeric(5))
-                .queryParam("size",2);
+                .queryParam("size",1)
+                .build().encode().toUri();
 
         ResponseEntity<ResponseMessageDto> response = template.exchange(
-                builder.build().encode().toUri(),
+                uri,
                 HttpMethod.GET, null, ResponseMessageDto.class);
 
         //Verify request isn't succeed
         checkEntityNotFoundException(response);
     }
 
+    private void assertExpectedContentResource(ContentResponseDto content) {
+        assertThat(content.hasLink("self")).isTrue();
+    }
 
     private void checkEntityNotFoundException(ResponseEntity<ResponseMessageDto> response){
         assertEquals(404, response.getStatusCodeValue());
