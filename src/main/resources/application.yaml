@@ -10,12 +10,14 @@ spring:
 # ===============================
 # DATABASE
 # ===============================
-spring:
-  datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://db:5434/${POSTGRES_DB:content_db}
-    username: ${POSTGRES_USERNAME:postgres}
-    password: ${POSTGRES_PASSWORD:postgres}
+db:
+  driver: org.postgresql.Driver
+  host: localhost
+  port: 5432
+  name: content_db
+  url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
+  username: postgres
+  password: qwerty123
 ---
 # ===============================
 # JPA / HIBERNATE
@@ -55,7 +57,6 @@ aws:
 # ===============================
 # MULTIPART (MultipartProperties)
 # ===============================
-  # Enable multipart uploads
 spring:
   servlet:
     multipart:
