@@ -1,5 +1,8 @@
 package org.speech4j.contentservice.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.dto.validation.ExistData;
@@ -59,8 +62,15 @@ public class ContentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ContentResponseDto save(@PathVariable String tenantId,
-                                   @Validated({NewData.class}) @RequestBody ContentRequestDto dto) {
+    @Operation(
+            summary = "Create content by the tenant ID",
+            responses = {
+                    @ApiResponse(responseCode = "400", description = "Validation exception")})
+    public ContentResponseDto create(
+            @Parameter(description = "Tenant ID for saving", required = true)
+            @PathVariable String tenantId,
+            @Parameter(description = "Content OBJECT that needs to be added to database", required = true)
+            @Validated({NewData.class}) @RequestBody ContentRequestDto dto) {
         ContentBox contentBox = contentMapper.toEntity(dto);
         contentBox.setTenantGuid(tenantId);
 
@@ -70,7 +80,16 @@ public class ContentController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentResponseDto findById(@PathVariable String tenantId, @PathVariable String id) {
+    @Operation(
+            summary = "Get content by the tenant ID and content ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Content is found"),
+                    @ApiResponse(responseCode = "404", description = "Content not found")})
+    public ContentResponseDto findById(
+            @Parameter(description = "Tenant ID for get", required = true)
+            @PathVariable String tenantId,
+            @Parameter(description = "Content ID for get", required = true)
+            @PathVariable String id) {
         checkIfExist(tenantId, id);
 
         return contentMapper.toDto(contentService.findById(id))
@@ -79,9 +98,19 @@ public class ContentController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentResponseDto update(@Validated({ExistData.class}) @RequestBody ContentRequestDto dto,
-                                     @PathVariable String tenantId,
-                                     @PathVariable String id) {
+    @Operation(
+            summary = "Update entity by the tenant ID and content ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Content is updated"),
+                    @ApiResponse(responseCode = "404", description = "Content not found"),
+                    @ApiResponse(responseCode = "400", description = "Validation exception")})
+    public ContentResponseDto update(
+            @Parameter(description = "Content OBJECT that needs to be update", required = true)
+            @Validated({ExistData.class}) @RequestBody ContentRequestDto dto,
+            @Parameter(description = "Tenant ID for update", required = true)
+            @PathVariable String tenantId,
+            @Parameter(description = "Content ID for update", required = true)
+            @PathVariable String id) {
         checkIfExist(tenantId, id);
         return contentMapper.toDto(contentService.update(contentMapper.toEntity(dto), id))
                 .add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString()));
@@ -89,8 +118,16 @@ public class ContentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Get all configs by the list of TAGs and by the tenant ID",
+            description = "Get list of contents",
+            responses = {
+                    @ApiResponse(responseCode = "404", description = "Content not found"),
+                    @ApiResponse(responseCode = "200", description = "OK")})
     public PagedModel<ContentResponseDto> findAllByTags(
+            @Parameter(description = "Tenant ID for get", required = true)
             @PathVariable String tenantId,
+            @Parameter(description = "List of the TAG NAMES for get", required = true)
             @RequestParam Set<String> tagNames,
             @PageableDefault(page = 0, size = 2, sort = {"guid"}, direction = Sort.Direction.ASC) Pageable pageable) {
 
@@ -106,16 +143,35 @@ public class ContentController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable String tenantId, @PathVariable("id") String id) {
+    @Operation(
+            summary = "Delete content by the tenant ID and content ID",
+            responses = {
+                    @ApiResponse(responseCode = "404", description = "Content not found")})
+    public void delete(
+            @Parameter(description = "Tenant ID for delete", required = true)
+            @PathVariable String tenantId,
+            @Parameter(description = "Content ID for delete", required = true)
+            @PathVariable String id) {
         checkIfExist(tenantId, id);
         contentService.deleteById(id);
     }
 
     @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public String uploadAudioFile(@PathVariable String tenantId,
-                                  @RequestPart MultipartFile file,
-                                  @RequestPart ContentRequestDto dto){
+    @Operation(
+            summary = "Upload an audio file and save the content with a particular URL to database by the tenant ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Content is updated"),
+                    @ApiResponse(responseCode = "500", description = "AWS server error"),
+                    @ApiResponse(responseCode = "400", description = "Validation exception"),
+                    @ApiResponse(responseCode = "404", description = "Content not found")})
+    public String uploadAudioFile(
+            @Parameter(description = "Tenant ID for the saving content", required = true)
+            @PathVariable String tenantId,
+            @Parameter(description = "Audio file for uploading to AWS S3", required = true)
+            @RequestPart MultipartFile file,
+            @Parameter(description = "Content OBJECT for saving to db with an audio url", required = true)
+            @RequestPart ContentRequestDto dto){
         String url = s3Service.uploadAudioFile(tenantId, file);
 
         ContentBox contentBox = contentMapper.toEntity(dto);

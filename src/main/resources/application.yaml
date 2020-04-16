@@ -22,7 +22,7 @@ db:
   name: content_db
   url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
   username: postgres
-  password: postgres
+  password: qwerty123
 ---
 # ===============================
 # JPA / HIBERNATE
