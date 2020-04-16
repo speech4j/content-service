@@ -5,11 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Set;
 
-@Repository
 public interface ContentBoxRepository extends PagingAndSortingRepository<ContentBox, String> {
     @Query(value =
             "SELECT distinct c " +
