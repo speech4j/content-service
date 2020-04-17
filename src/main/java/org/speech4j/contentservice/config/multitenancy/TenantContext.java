@@ -1,4 +1,4 @@
-package org.speech4j.contentservice.config.multitenan;
+package org.speech4j.contentservice.config.multitenancy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
