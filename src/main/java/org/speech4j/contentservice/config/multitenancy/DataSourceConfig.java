@@ -1,4 +1,4 @@
-package org.speech4j.contentservice.config;
+package org.speech4j.contentservice.config.multitenancy;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
