@@ -32,9 +32,11 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
         final Connection connection = getAnyConnection();
         try {
             if (tenantIdentifier != null) {
-                connection.createStatement().execute("USE " + tenantIdentifier);
+                // Create the schema
+                connection.createStatement().execute("CREATE SCHEMA IF NOT EXISTS " + tenantIdentifier );
+                connection.setSchema(tenantIdentifier);
             } else {
-                connection.createStatement().execute("USE " + DEFAULT_TENANT_ID);
+                connection.setSchema(DEFAULT_TENANT_ID);
             }
         }
         catch ( SQLException e ) {
@@ -48,7 +50,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     @Override
     public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
         try {
-            connection.createStatement().execute( "USE " + DEFAULT_TENANT_ID );
+            connection.setSchema(DEFAULT_TENANT_ID);
         }
         catch ( SQLException e ) {
             throw new HibernateException(

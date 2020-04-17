@@ -7,7 +7,7 @@ import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.dto.validation.ExistData;
 import org.speech4j.contentservice.dto.validation.NewData;
-import org.speech4j.contentservice.entity.ContentBox;
+import org.speech4j.contentservice.entity.Content;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.mapper.ContentDtoMapper;
 import org.speech4j.contentservice.service.ContentService;
@@ -44,16 +44,16 @@ import java.util.Set;
 @RequestMapping("/api/tenants/{tenantId}/contents")
 public class ContentController {
 
-    private ContentService<ContentBox> contentService;
+    private ContentService<Content> contentService;
     private ContentDtoMapper contentMapper;
     private S3Service s3Service;
-    private PagedResourcesAssembler<ContentBox> pagedResourcesAssembler;
+    private PagedResourcesAssembler<Content> pagedResourcesAssembler;
 
     @Autowired
     public ContentController(ContentService contentService,
                              ContentDtoMapper contentMapper,
                              S3Service s3Service,
-                             PagedResourcesAssembler<ContentBox> pagedResourcesAssembler) {
+                             PagedResourcesAssembler<Content> pagedResourcesAssembler) {
         this.contentService = contentService;
         this.contentMapper = contentMapper;
         this.s3Service = s3Service;
@@ -71,10 +71,10 @@ public class ContentController {
             @PathVariable String tenantId,
             @Parameter(description = "Content OBJECT that needs to be added to database", required = true)
             @Validated({NewData.class}) @RequestBody ContentRequestDto dto) {
-        ContentBox contentBox = contentMapper.toEntity(dto);
-        contentBox.setTenantGuid(tenantId);
+        Content content = contentMapper.toEntity(dto);
+        content.setTenantGuid(tenantId);
 
-        return contentMapper.toDto(contentService.create(contentBox))
+        return contentMapper.toDto(contentService.create(content))
                 .add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString()));
     }
 
@@ -131,7 +131,7 @@ public class ContentController {
             @RequestParam Set<String> tagNames,
             @PageableDefault(page = 0, size = 2, sort = {"guid"}, direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<ContentBox> contents = contentService.findAllByTags(tenantId, tagNames, pageable);
+        Page<Content> contents = contentService.findAllByTags(tenantId, tagNames, pageable);
         if (contents.isEmpty()){
             throw new ContentNotFoundException("Content not found!");
         }
@@ -174,17 +174,17 @@ public class ContentController {
             @RequestPart ContentRequestDto dto){
         String url = s3Service.uploadAudioFile(tenantId, file);
 
-        ContentBox contentBox = contentMapper.toEntity(dto);
-        contentBox.setTenantGuid(tenantId);
-        contentBox.setContentUrl(url);
+        Content content = contentMapper.toEntity(dto);
+        content.setTenantGuid(tenantId);
+        content.setContentUrl(url);
         //Saving to db content item with a particular url
-        contentService.create(contentBox);
+        contentService.create(content);
 
         return "File uploaded successfully";
     }
 
     private void checkIfExist(String tenantId, String id){
-        ContentBox content = contentService.findById(id);
+        Content content = contentService.findById(id);
         if (!content.getTenantGuid().equals(tenantId)) {
             throw new ContentNotFoundException("Content not found!");
         }

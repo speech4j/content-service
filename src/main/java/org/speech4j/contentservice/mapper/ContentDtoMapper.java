@@ -3,7 +3,7 @@ package org.speech4j.contentservice.mapper;
 import org.speech4j.contentservice.controller.ContentController;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
-import org.speech4j.contentservice.entity.ContentBox;
+import org.speech4j.contentservice.entity.Content;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -13,8 +13,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ContentDtoMapper extends RepresentationModelAssemblerSupport<ContentBox, ContentResponseDto>
-        implements AbstractEntityDtoMapper<ContentRequestDto, ContentBox, ContentResponseDto> {
+public class ContentDtoMapper extends RepresentationModelAssemblerSupport<Content, ContentResponseDto>
+        implements AbstractEntityDtoMapper<ContentRequestDto, Content, ContentResponseDto> {
 
     public ContentDtoMapper() {
         super(ContentController.class, ContentResponseDto.class);
@@ -24,8 +24,8 @@ public class ContentDtoMapper extends RepresentationModelAssemblerSupport<Conten
     TagDtoMapper mapper;
 
     @Override
-    public ContentBox toEntity(ContentRequestDto dto) {
-        return ContentBox.builder()
+    public Content toEntity(ContentRequestDto dto) {
+        return Content.builder()
                 .tags(mapper.toEntityList(dto.getTags()))
                 .contentUrl(dto.getContentUrl())
                 .transcript(dto.getTranscript())
@@ -33,7 +33,7 @@ public class ContentDtoMapper extends RepresentationModelAssemblerSupport<Conten
     }
 
     @Override
-    public ContentResponseDto toDto(ContentBox entity) {
+    public ContentResponseDto toDto(Content entity) {
         return ContentResponseDto.builder()
                 .contentGuid(entity.getGuid())
                 .tags(mapper.toDtoList(entity.getTags()))
@@ -43,12 +43,12 @@ public class ContentDtoMapper extends RepresentationModelAssemblerSupport<Conten
                 .build();
     }
 
-    public Page<ContentResponseDto> toDtoPage(Page<ContentBox> entityPage) {
+    public Page<ContentResponseDto> toDtoPage(Page<Content> entityPage) {
         return entityPage.map(this::toDto);
     }
 
     @Override
-    public ContentResponseDto toModel(ContentBox entity) {
+    public ContentResponseDto toModel(Content entity) {
         ContentResponseDto contentResponseDto = toDto(entity);
 
         contentResponseDto.add(linkTo(

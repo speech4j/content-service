@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -27,7 +28,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "contents")
-public class ContentBox implements Serializable {
+public class Content implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -39,7 +40,9 @@ public class ContentBox implements Serializable {
             inverseJoinColumns = { @JoinColumn(name = "tag_guid") }
     )
     private List<Tag> tags;
+    @Column(name = "contenturl")
     private String contentUrl;
     private String transcript;
+    @Column(name = "tenantguid")
     private String tenantGuid;
 }

@@ -31,5 +31,5 @@ public class Tag implements Serializable {
     private String guid;
     private String name;
     @ManyToMany(mappedBy = "tags")
-    private List<ContentBox> contents;
+    private List<Content> contents;
 }

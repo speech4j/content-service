@@ -16,7 +16,7 @@ public class TenantInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         Map pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        String tenantId = (String) pathVariables.get("tenantId");
+        String tenantId = (String) pathVariables.get("tenant");
         TenantContext.setCurrentTenant(tenantId);
 
         return true;

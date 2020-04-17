@@ -1,7 +1,7 @@
 package org.speech4j.contentservice.service.impl;
 
 import org.speech4j.contentservice.dto.response.ConfigDto;
-import org.speech4j.contentservice.entity.ContentBox;
+import org.speech4j.contentservice.entity.Content;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.repository.ContentBoxRepository;
 import org.speech4j.contentservice.service.ContentService;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class ContentServiceImpl implements ContentService<ContentBox> {
+public class ContentServiceImpl implements ContentService<Content> {
     @Value(value = "${remote.tenant-service.url}")
     private String remoteServiceURL;
 
@@ -33,19 +33,19 @@ public class ContentServiceImpl implements ContentService<ContentBox> {
     }
 
     @Override
-    public ContentBox create(ContentBox entity) {
+    public Content create(Content entity) {
         //List<ConfigDto> configs = getAllConfigByTenantId(entity.getTenantGuid());
         return contentRepository.save(entity);
     }
 
     @Override
-    public ContentBox findById(String id) {
+    public Content findById(String id) {
         return findByIdOrThrowException(id);
     }
 
     @Override
-    public ContentBox update(ContentBox entity, String id) {
-        ContentBox content = findByIdOrThrowException(id);
+    public Content update(Content entity, String id) {
+        Content content = findByIdOrThrowException(id);
         content.setContentUrl(entity.getContentUrl());
         content.setTranscript(entity.getTranscript());
 
@@ -59,11 +59,11 @@ public class ContentServiceImpl implements ContentService<ContentBox> {
     }
 
     @Override
-    public Page<ContentBox> findAllByTags(String tenantId, Set<String> tags, Pageable pageable) {
+    public Page<Content> findAllByTags(String tenantId, Set<String> tags, Pageable pageable) {
         return contentRepository.findAllByTags(tenantId, tags, pageable);
     }
 
-    private ContentBox findByIdOrThrowException(String id) {
+    private Content findByIdOrThrowException(String id) {
         //Checking if user is found
         return contentRepository.findById(id)
                 .orElseThrow(() -> new ContentNotFoundException("Content not found!"));
