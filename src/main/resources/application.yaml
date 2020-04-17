@@ -33,6 +33,26 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL82Dialect
         format_sql: true
         generate_statistics: false
+# ===============================
+# LOGGER / HIBERNATE
+# ===============================
+logging.level:
+  org.hibernate.tool.hbm2ddl: DEBUG
+  org.hibernate.SQL: DEBUG
+  org.hibernate.type: TRACE
+---
+# ===============================
+# SCHEMA-GENERATION / HIBERNATE
+# ===============================
+#spring:
+#  jpa:
+#    properties:
+#      javax:
+#        persistence:
+#          schema-generation:
+#            create-source: metadata
+#            scripts:
+#              action: create
 ---
 # ===============================
 # SWAGGER

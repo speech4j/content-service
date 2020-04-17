@@ -39,10 +39,11 @@ public class HibernateConfig {
         properties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.SCHEMA);
         properties.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, multiTenantConnectionProviderImpl);
         properties.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, currentTenantIdentifierResolverImpl);
+        properties.put("hibernate.hbm2ddl.auto", "update");
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("org.speech4j");
+        em.setPackagesToScan("/org/speech4j/contentservice/entity");
         em.setJpaVendorAdapter(jpaVendorAdapter());
         em.setJpaPropertyMap(properties);
         return em;

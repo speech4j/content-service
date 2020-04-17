@@ -1,6 +1,7 @@
 package org.speech4j.contentservice.config.multitenancy;
 
 import org.hibernate.HibernateException;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
@@ -8,9 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import static org.speech4j.contentservice.config.multitenancy.MultiTenantConstants.DEFAULT_TENANT_ID;
 
@@ -36,7 +40,8 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
         try {
             if (tenantIdentifier != null) {
                 // Create the schema
-                connection.createStatement().execute("CREATE SCHEMA IF NOT EXISTS tenant_" + tenantIdentifier );
+                String persistentTenant = "tenant_" + tenantIdentifier;
+                connection.createStatement().execute("CREATE SCHEMA IF NOT EXISTS " + persistentTenant);
                 connection.setSchema(tenantIdentifier);
             } else {
                 connection.setSchema(DEFAULT_TENANT_ID);
@@ -78,4 +83,6 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     public boolean supportsAggressiveRelease() {
         return true;
     }
+
+
 }

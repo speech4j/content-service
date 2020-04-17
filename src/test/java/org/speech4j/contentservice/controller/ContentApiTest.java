@@ -52,8 +52,8 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     private final String exceptionMessage = "Content not found!";
     private List<ContentRequestDto> contentList;
     private List<ContentResponseDto> contentListResponse;
-
-    private String tenantId = "111";
+    //ToDo remove later
+    private String tenantId = "public";
     private String contentId;
 
     private WireMockServer wireMockServer;
