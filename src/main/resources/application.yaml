@@ -53,6 +53,7 @@ logging.level:
 #            create-source: metadata
 #            scripts:
 #              action: create
+#              create-target: schema-script.sql
 ---
 # ===============================
 # SWAGGER
