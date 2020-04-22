@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: generateShema
+      author: MarrMika
+      changes:
+        - sqlFile:
+            dbms: mysql
+            encoding: utf8
+            endDelimiter: \n/\s*\n|\n/\s*$
+            path: changes/schema-script.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

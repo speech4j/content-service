@@ -1,5 +1,12 @@
 package org.speech4j.contentservice.config.multitenancy;
 
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.integration.spring.SpringLiquibase;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +23,9 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private SpringLiquibase springLiquibase;
 
     @Override
     public Connection getAnyConnection() throws SQLException {
@@ -34,13 +44,27 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
             if (tenantIdentifier != null) {
                 // Create the schema
                 String persistentTenant = "tenant_" + tenantIdentifier;
-                connection.createStatement().execute("CREATE SCHEMA IF NOT EXISTS " + persistentTenant);
-                connection.setSchema(tenantIdentifier);
+
+                connection.createStatement().executeUpdate("CREATE SCHEMA IF NOT EXISTS " + persistentTenant);
+
+                Database database = DatabaseFactory.getInstance()
+                        .findCorrectDatabaseImplementation(new JdbcConnection(connection));
+
+                ClassLoaderResourceAccessor resourceAcessor =
+                        new ClassLoaderResourceAccessor(getClass().getClassLoader());
+
+                database.setLiquibaseSchemaName(persistentTenant);
+                database.setDefaultSchemaName(persistentTenant);
+                new Liquibase(
+                        "db/changelog/db.changelog-master.yaml",
+                        resourceAcessor, database)
+                        .update(springLiquibase.getContexts());
+
             } else {
                 connection.setSchema(DEFAULT_TENANT_ID);
             }
         }
-        catch ( SQLException e ) {
+        catch (SQLException | LiquibaseException e ) {
             throw new HibernateException(
                     "Could not alter JDBC connection to specified schema [" + tenantIdentifier + "]", e
             );

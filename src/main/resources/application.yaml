@@ -11,13 +11,20 @@ spring:
 # DATABASE
 # ===============================
 db:
-  driver: org.postgresql.Driver
   host: localhost
   port: 5432
   name: content_db
-  url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
-  username: postgres
-  password: qwerty123
+spring:
+  datasource:
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
+    username: postgres
+    password: qwerty123
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    user: postgres
+    password: qwerty123
+    default-schema: public
 ---
 # ===============================
 # JPA / HIBERNATE
@@ -26,7 +33,8 @@ spring.jpa:show-sql: true
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+      generate-ddl : false
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
     properties:
       hibernate:
@@ -53,7 +61,7 @@ logging.level:
 #            create-source: metadata
 #            scripts:
 #              action: create
-#              create-target: schema-script.sql
+#              create-target: schema-schema-script.sql
 ---
 # ===============================
 # SWAGGER

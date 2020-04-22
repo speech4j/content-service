@@ -46,6 +46,7 @@ dependencies {
     implementation 'org.springframework.hateoas:spring-hateoas:1.0.4.RELEASE'
     implementation 'org.springframework.plugin:spring-plugin-core:2.0.0.RELEASE'
     implementation 'com.mchange:c3p0:0.9.2.1'
+    implementation 'org.liquibase:liquibase-core:3.8.9'
 
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
