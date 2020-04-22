@@ -43,7 +43,9 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
         try {
             if (tenantIdentifier != null) {
                 // Create the schema
-                String persistentTenant = "tenant_" + tenantIdentifier;
+                //ToDo Add later `tenant` to schema Name as it should start with alphabetic character.
+                //  String persistentTenant = "tenant_" + tenantIdentifier;
+                String persistentTenant = tenantIdentifier;
 
                 connection.createStatement().executeUpdate("CREATE SCHEMA IF NOT EXISTS " + persistentTenant);
 
