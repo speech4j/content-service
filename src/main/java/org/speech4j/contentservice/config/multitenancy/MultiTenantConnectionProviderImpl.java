@@ -60,6 +60,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                         resourceAcessor, database)
                         .update(springLiquibase.getContexts());
 
+                connection.setSchema(persistentTenant);
             } else {
                 connection.setSchema(DEFAULT_TENANT_ID);
             }
