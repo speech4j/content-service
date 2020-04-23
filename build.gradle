@@ -56,8 +56,10 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.26.3"
+
+    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:3.6'
+    liquibaseRuntime sourceSets.main.output
 }
 
 test {
@@ -82,3 +84,7 @@ jacocoTestReport {
 }
 
 project.tasks["sonarqube"].dependsOn "jacocoTestReport"
+
+configurations {
+    liquibaseRuntime.extendsFrom runtime
+}
