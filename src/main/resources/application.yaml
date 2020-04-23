@@ -11,9 +11,9 @@ spring:
 # DATABASE
 # ===============================
 db:
-  host: localhost
+  host: db
   port: 5432
-  name: content_db
+  name: tenant_db
 spring:
   datasource:
     driver: org.postgresql.Driver

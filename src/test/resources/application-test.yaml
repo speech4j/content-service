@@ -1,11 +1,18 @@
 # ===============================
-# DATABASE
+# DATABASE/TEST
 # ===============================
 db:
-  driver: org.postgresql.Driver
   host: localhost
   port: 5432
-  name: content_db
-  url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
-  username: postgres
-  password: postgres
+  name: tenant_db
+spring:
+  datasource:
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
+    username: postgres
+    password: postgres
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    user: postgres
+    password: postgres
+    default-schema: public
