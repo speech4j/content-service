@@ -48,6 +48,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                 String persistentTenant = tenantIdentifier;
 
                 connection.createStatement().executeUpdate("CREATE SCHEMA IF NOT EXISTS " + persistentTenant);
+                connection.setSchema(persistentTenant);
 
                 Database database = DatabaseFactory.getInstance()
                         .findCorrectDatabaseImplementation(new JdbcConnection(connection));
@@ -62,7 +63,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                         resourceAcessor, database)
                         .update(springLiquibase.getContexts());
 
-                connection.setSchema(persistentTenant);
+
             } else {
                 connection.setSchema(DEFAULT_TENANT_ID);
             }
