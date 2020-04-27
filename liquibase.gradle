@@ -1,4 +1,5 @@
-def diffLog = "$projectDir/src/main/resources/db/changelog/migrations" + new Date().format("yyyy-MM-dd, HH:mm:ss-") + "v001.yaml"
+def diffLog = "$projectDir/src/main/resources/db/changelog/migrations/" +
+                new Date().format("yyyy-MM-dd, HH:mm:ss-") + "v001.yaml"
 
 configurations {
     liquibase
