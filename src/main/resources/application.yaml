@@ -17,14 +17,14 @@ db:
 spring:
   datasource:
     driver: org.postgresql.Driver
-    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
+    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}?currentSchema=speech4j
     username: postgres
     password: qwerty123
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     user: postgres
     password: qwerty123
-    default-schema: public
+    default-schema: speech4j
 ---
 # ===============================
 # JPA / HIBERNATE

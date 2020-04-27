@@ -65,6 +65,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 
 
             } else {
+                connection.createStatement().executeUpdate("CREATE SCHEMA IF NOT EXISTS " + DEFAULT_TENANT_ID);
                 connection.setSchema(DEFAULT_TENANT_ID);
             }
         }
