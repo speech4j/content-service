@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1588006308009-1
+    id: 1588014007282-1
     author: mslob (generated)
     changes:
     - createTable:
@@ -17,7 +17,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: content_tag
 - changeSet:
-    id: 1588006308009-2
+    id: 1588014007282-2
     author: mslob (generated)
     changes:
     - createTable:
@@ -40,7 +40,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: contents
 - changeSet:
-    id: 1588006308009-3
+    id: 1588014007282-3
     author: mslob (generated)
     changes:
     - createTable:
@@ -57,7 +57,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: tags
 - changeSet:
-    id: 1588006308009-4
+    id: 1588014007282-4
     author: mslob (generated)
     changes:
     - addForeignKeyConstraint:
@@ -70,7 +70,7 @@ databaseChangeLog:
         referencedTableName: contents
         validate: true
 - changeSet:
-    id: 1588006308009-5
+    id: 1588014007282-5
     author: mslob (generated)
     changes:
     - addForeignKeyConstraint:

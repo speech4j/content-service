@@ -9,11 +9,16 @@ dependencies {
     implementation 'org.liquibase.ext:liquibase-hibernate5:3.6'
 }
 
-task liquibaseDiffChangelog(type: JavaExec) {
+task liquibaseDiff(type: JavaExec) {
     group = "liquibase"
 
     classpath sourceSets.main.runtimeClasspath
     main = "liquibase.integration.commandline.Main"
+
+    if(project.hasProperty('diffChangeLogFile')){
+        diffLog = diffChangeLogFile
+    }
+
 
     args "--changeLogFile=" + diffLog
     args "--referenceUrl=hibernate:spring:org.speech4j.contentservice.entity?dialect=org.hibernate.dialect.PostgreSQL82Dialect"
