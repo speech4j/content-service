@@ -9,6 +9,9 @@ dependencies {
     implementation 'org.liquibase.ext:liquibase-hibernate5:3.6'
 }
 
+Properties properties = new Properties()
+properties.load(new FileInputStream("src/main/resources/liquibase.properties"))
+
 task liquibaseDiff(type: JavaExec) {
     group = "liquibase"
 
@@ -21,10 +24,10 @@ task liquibaseDiff(type: JavaExec) {
 
 
     args "--changeLogFile=" + diffLog
-    args "--referenceUrl=hibernate:spring:org.speech4j.contentservice.entity?dialect=org.hibernate.dialect.PostgreSQL82Dialect"
-    args "--username=postgres"
-    args "--password=qwerty123"
-    args "--url=jdbc:postgresql://localhost:5432/tenant_db?currentSchema=speech4j"
-    args "--referenceDriver=liquibase.ext.hibernate.database.connection.HibernateDriver"
+    args "--referenceUrl=" + properties.getProperty('referenceUrl')  //hibernate entities
+    args "--username=" + properties.getProperty('username')
+    args "--password=" + properties.getProperty('password')
+    args "--url=" + properties.getProperty('url')                    //current db schema
+    args "--referenceDriver=" + properties.getProperty('referenceDriver')
     args "diffChangeLog"
 }
