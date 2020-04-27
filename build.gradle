@@ -31,6 +31,16 @@ dependencyManagement {
 
 
 dependencies {
+    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:3.6'
+    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.0.1'
+    liquibaseRuntime'org.springframework.boot:spring-boot-starter-data-jpa'
+    liquibaseRuntime('org.springframework.boot:spring-boot-starter-data-jpa:2.1.0.RELEASE')
+    liquibaseRuntime('org.liquibase.ext:liquibase-hibernate5:3.6')
+    //liquibaseRuntime('org.liquibase:liquibase:3.7.0-SNAPSHOT')
+    liquibaseRuntime("org.postgresql:postgresql:42.2.5")
+    liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
+    liquibaseRuntime sourceSets.main.output
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
@@ -58,8 +68,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.26.3"
 
-    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:3.6'
-    liquibaseRuntime sourceSets.main.output
+
 }
 
 test {
@@ -86,23 +95,27 @@ jacocoTestReport {
 project.tasks["sonarqube"].dependsOn "jacocoTestReport"
 
 //Liquibase
-def dbUser = System.getProperty("spring.datasource.username")
-def dbPassword = System.getProperty("spring.datasource.password")
-def dbUrl = System.getProperty("spring.datasource.url")
+//build.dependsOn update
+//test.dependsOn update
+//diff.dependsOn compileJava
+diffChangeLog.dependsOn compileJava
+generateChangelog.dependsOn compileJava
 
 liquibase {
     activities {
         main {
-            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
-            url dbUrl
-            username dbUser
-            password dbPassword
+            File propsFile = new File("src/main/resources/liquibase.properties")
+            Properties properties = new Properties()
+            properties.load(new FileInputStream(propsFile))
+
+            changeLogFile ${properties.changeLogFile}
+            url "${properties.url}"
+            username "${properties.username}"
+            password "${properties.password}"
+            referenceUrl ${properties.referenceUrl}
+            driver ${properties.driver}
         }
     }
+    runList = 'main'
 }
 
-task updateDbMain() {
-    doLast {
-        liquibase.runList = 'main'
-    }
-}
