@@ -1,6 +1,16 @@
 databaseChangeLog:
   - changeSet:
-      id: generateShema
+       id: precondition attributes 1
+       author: nvoxland
+       preConditions:
+        - onSqlOutput: IGNORE
+        - onError: CONTINUE
+        - onFail: CONTINUE
+        - sqlCheck:
+              expectedResult: 1
+              sql: select count(*) from speech4j.databasechangeloglock
+  - changeSet:
+      id: runOnChange set
       author: postgres
       changes:
         - sqlFile:

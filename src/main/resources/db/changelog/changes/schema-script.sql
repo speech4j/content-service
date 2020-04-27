@@ -3,7 +3,6 @@ create table content_tag (
                       content_guid varchar(255) not null,
                       tag_guid varchar(255) not null
 );
-
 create table contents (
                       guid varchar(255) not null,
                       contenturl varchar(255),
