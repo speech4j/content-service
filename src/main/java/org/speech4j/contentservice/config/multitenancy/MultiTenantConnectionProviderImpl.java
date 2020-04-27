@@ -41,7 +41,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     public Connection getConnection(String tenantIdentifier) throws SQLException {
         final Connection connection = getAnyConnection();
         try {
-            if (tenantIdentifier != null) {
+            if (tenantIdentifier != null & !tenantIdentifier.equals(DEFAULT_TENANT_ID)) {
                 // Create the schema
                 //ToDo Add later `tenant` to schema Name as it should start with alphabetic character.
                 //  String persistentTenant = "tenant_" + tenantIdentifier;
@@ -65,7 +65,6 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 
 
             } else {
-                connection.createStatement().executeUpdate("CREATE SCHEMA IF NOT EXISTS " + DEFAULT_TENANT_ID);
                 connection.setSchema(DEFAULT_TENANT_ID);
             }
         }
