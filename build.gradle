@@ -29,6 +29,9 @@ dependencyManagement {
     }
 }
 
+apply from: 'liquibase.gradle'
+//TODO use later
+//diffChangeLog.dependsOn build
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -58,7 +61,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.26.3"
 
-    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:3.6'
 }
 
 test {
@@ -84,24 +86,6 @@ jacocoTestReport {
 
 project.tasks["sonarqube"].dependsOn "jacocoTestReport"
 
-//Liquibase
-diffChangeLog.dependsOn compileJava
 
-liquibase {
-    activities {
-        main {
-            File propsFile = new File("src/main/resources/liquibase.properties")
-            Properties properties = new Properties()
-            properties.load(new FileInputStream(propsFile))
 
-            changeLogFile ${properties.changeLogFile}
-            url "${properties.url}"
-            username "${properties.username}"
-            password "${properties.password}"
-            referenceUrl ${properties.referenceUrl}
-            driver ${properties.driver}
-        }
-    }
-    runList = 'main'
-}
 
