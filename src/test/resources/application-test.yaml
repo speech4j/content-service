@@ -12,7 +12,4 @@ spring:
     username: postgres
     password: postgres
   liquibase:
-    change-log: classpath:/db/changelog/db.changelog-master.yaml
-    user: postgres
-    password: postgres
-    default-schema: public
+    default-schema: speech4j

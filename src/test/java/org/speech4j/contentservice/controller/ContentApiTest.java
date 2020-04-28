@@ -53,7 +53,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     private List<ContentRequestDto> contentList;
     private List<ContentResponseDto> contentListResponse;
     //ToDo remove later
-    private String tenantId = "public";
+    private String tenantId = "speech4j";
     private String contentId;
 
     private WireMockServer wireMockServer;
