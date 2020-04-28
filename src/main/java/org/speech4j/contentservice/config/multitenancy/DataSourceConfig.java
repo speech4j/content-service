@@ -29,8 +29,7 @@ public class DataSourceConfig {
 
 
     private void init(DataSource dataSource){
-        try {
-            final Connection connection = dataSource.getConnection();
+        try (final Connection connection = dataSource.getConnection()){
             connection.createStatement().executeUpdate("CREATE SCHEMA IF NOT EXISTS " + DEFAULT_TENANT_ID);
         }catch (SQLException e){
             e.printStackTrace();
