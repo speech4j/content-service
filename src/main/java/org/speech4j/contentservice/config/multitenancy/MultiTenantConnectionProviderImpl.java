@@ -57,16 +57,12 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                     Database database = DatabaseFactory.getInstance()
                             .findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
-                    ClassLoaderResourceAccessor resourceAcessor =
-                            new ClassLoaderResourceAccessor(getClass().getClassLoader());
-
                     database.setLiquibaseSchemaName(persistentTenant);
                     database.setDefaultSchemaName(persistentTenant);
 
-                    new Liquibase(
-                            "db/changelog/db.changelog-master.yaml",
-                            resourceAcessor, database)
-                            .update(springLiquibase.getContexts());
+                    //Updating of schema
+                    updateSchema(database);
+
                 }
 
             } else {
@@ -109,5 +105,18 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
         return true;
     }
 
+    private void updateSchema(Database database) throws LiquibaseException {
+        ClassLoaderResourceAccessor resourceAcessor =
+                new ClassLoaderResourceAccessor(getClass().getClassLoader());
+
+        try {
+            Liquibase liquibase = new Liquibase(
+                    "db/changelog/db.changelog-master.yaml", resourceAcessor, database);
+            liquibase.update(springLiquibase.getContexts());
+
+        } catch (Exception e){
+            throw new LiquibaseException("Error during the effort to update schema!");
+        }
+    }
 
 }

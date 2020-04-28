@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.speech4j.contentservice.config.multitenancy.MultiTenantConstants.DEFAULT_TENANT_ID;
 
@@ -34,7 +35,9 @@ public class DataSourceConfig {
 
     private void init(DataSource dataSource){
         try (final Connection connection = dataSource.getConnection()){
-            connection.createStatement().executeUpdate("CREATE SCHEMA IF NOT EXISTS " + DEFAULT_TENANT_ID);
+            try(Statement st = connection.createStatement()) {
+                st.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + DEFAULT_TENANT_ID);
+            }
         }catch (SQLException e){
             LOGGER.debug(e.getMessage());
         }
