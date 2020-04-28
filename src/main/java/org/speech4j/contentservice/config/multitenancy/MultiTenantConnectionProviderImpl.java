@@ -15,17 +15,21 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.speech4j.contentservice.config.multitenancy.MultiTenantConstants.DEFAULT_TENANT_ID;
 
 @Component
 public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionProvider {
 
-    @Autowired
     private DataSource dataSource;
+    transient private SpringLiquibase springLiquibase;
 
     @Autowired
-    private SpringLiquibase springLiquibase;
+    public MultiTenantConnectionProviderImpl(DataSource dataSource, SpringLiquibase springLiquibase) {
+        this.dataSource = dataSource;
+        this.springLiquibase = springLiquibase;
+    }
 
     @Override
     public Connection getAnyConnection() throws SQLException {
@@ -41,36 +45,38 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     public Connection getConnection(String tenantIdentifier) throws SQLException {
         final Connection connection = getAnyConnection();
         try {
-            if (tenantIdentifier != null & !tenantIdentifier.equals(DEFAULT_TENANT_ID)) {
+            if (tenantIdentifier != null && !tenantIdentifier.equals(DEFAULT_TENANT_ID)) {
                 // Create the schema
                 String persistentTenant = "tenant_" + tenantIdentifier;
 
-                connection.createStatement().executeUpdate("CREATE SCHEMA IF NOT EXISTS " + persistentTenant);
-                connection.setSchema(persistentTenant);
+                try (Statement ps = connection.createStatement()) {
 
-                Database database = DatabaseFactory.getInstance()
-                        .findCorrectDatabaseImplementation(new JdbcConnection(connection));
+                    ps.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + persistentTenant);
+                    connection.setSchema(persistentTenant);
 
-                ClassLoaderResourceAccessor resourceAcessor =
-                        new ClassLoaderResourceAccessor(getClass().getClassLoader());
+                    Database database = DatabaseFactory.getInstance()
+                            .findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
-                database.setLiquibaseSchemaName(persistentTenant);
-                database.setDefaultSchemaName(persistentTenant);
-                new Liquibase(
-                        "db/changelog/db.changelog-master.yaml",
-                        resourceAcessor, database)
-                        .update(springLiquibase.getContexts());
+                    ClassLoaderResourceAccessor resourceAcessor =
+                            new ClassLoaderResourceAccessor(getClass().getClassLoader());
 
+                    database.setLiquibaseSchemaName(persistentTenant);
+                    database.setDefaultSchemaName(persistentTenant);
+
+                    new Liquibase(
+                            "db/changelog/db.changelog-master.yaml",
+                            resourceAcessor, database)
+                            .update(springLiquibase.getContexts());
+                }
 
             } else {
                 connection.setSchema(DEFAULT_TENANT_ID);
             }
-        }
-        catch (SQLException | LiquibaseException e ) {
+        } catch (SQLException | LiquibaseException e ) {
             throw new HibernateException(
-                    "Could not alter JDBC connection to specified schema [" + tenantIdentifier + "]", e
-            );
+                    "Could not alter JDBC connection to specified schema [" + tenantIdentifier + "]", e);
         }
+
         return connection;
     }
 
