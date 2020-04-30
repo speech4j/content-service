@@ -36,5 +36,5 @@ The content-service for uploading an etalon pair to AWS S3.
                  -p 5432:5432 -d postgres
  ```
 ## Running DB Migration
-* `./gradlew liquibaseDiff` - generate a file with differences between the current db schema and persist entities
+* `./gradlew diffChangeLog` - generate a file with differences between the current db schema and persist entities
 * `make migration MIGRATION_LABEL="log-version"` - generate diff file and include it in changelog-master.yaml

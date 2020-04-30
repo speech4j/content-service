@@ -4,6 +4,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id "org.sonarqube" version "2.8"
+    id 'org.liquibase.gradle' version '2.0.1'
 }
 
 group = 'com.speech4j'
@@ -28,9 +29,8 @@ dependencyManagement {
     }
 }
 
-apply from: 'liquibase.gradle'
-//TODO use later
-//diffChangeLog.dependsOn build
+diff.dependsOn assemble
+diffChangeLog.dependsOn compileJava
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -60,6 +60,10 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.26.3"
 
+    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:3.8'
+    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.0.1'
+    liquibaseRuntime sourceSets.main.runtimeClasspath
+    liquibaseRuntime sourceSets.main.output
 }
 
 test {
@@ -86,5 +90,29 @@ jacocoTestReport {
 project.tasks["sonarqube"].dependsOn "jacocoTestReport"
 
 
+//Liquibase configurations
+Properties prop = new Properties()
+prop.load(new FileInputStream("src/main/resources/liquibase.properties"))
+
+def diffLog = "$projectDir/src/main/resources/db/changelog/migrations/" +
+        new Date().format("yyyy-MM-dd, HH:mm:ss-") + "v001.xml"
+
+if(project.hasProperty('diffChangeLogFile')){
+    diffLog = diffChangeLogFile
+}
+
+liquibase {
+    activities {
+        main {
+            changeLogFile diffLog
+            referenceUrl prop.getProperty('referenceUrl')  //hibernate entities
+            url prop.getProperty('url')                    //current db schema
+            username prop.getProperty('username')
+            password prop.getProperty('password')
+            referenceDriver prop.getProperty('referenceDriver')
+            excludeObjects 'table:users,configs'
+        }
+    }
+}
 
 
