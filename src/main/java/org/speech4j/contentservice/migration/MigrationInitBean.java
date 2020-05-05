@@ -1,10 +1,8 @@
 package org.speech4j.contentservice.migration;
 
 import liquibase.exception.LiquibaseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.speech4j.contentservice.config.multitenancy.DataSourceConfig;
 import org.speech4j.contentservice.config.multitenancy.MultiTenantConnectionProviderImpl;
+import org.speech4j.contentservice.exception.InternalServerException;
 import org.speech4j.contentservice.migration.service.LiquibaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +22,6 @@ import java.util.List;
 @ConditionalOnBean(MultiTenantConnectionProviderImpl.class)
 @Component
 public class MigrationInitBean {
-    private static final Logger logger = LoggerFactory.getLogger(DataSourceConfig.class);
-
     @Value("${liquibase.master_changelog}")
     private String masterChangelogFile;
 
@@ -43,7 +39,7 @@ public class MigrationInitBean {
     }
 
     @PostConstruct
-    public void init(){
+    public void init() throws SQLException{
         List<String> tenants = getAllTenants();
 
         if (!tenants.isEmpty()){
@@ -51,9 +47,9 @@ public class MigrationInitBean {
 
                 try(Connection connection = multiTenantConnectionProvider.getConnection(tenant)) {
                     liquibaseService.updateSchema(connection, masterChangelogFile, tenant);
-
-                } catch (SQLException | LiquibaseException e) {
-                    e.printStackTrace();
+                    throw new SQLException();
+                } catch (SQLException| LiquibaseException e) {
+                    throw new InternalServerException("Error during updating of database!");
                 }
 
             });
@@ -63,20 +59,18 @@ public class MigrationInitBean {
     }
 
 
-    private List<String> getAllTenants(){
+    private List<String> getAllTenants() throws SQLException{
         List<String> tenants = new ArrayList<>();
 
         try (final Connection connection = dataSource.getConnection()){
             connection.setSchema("metadata");
             try(Statement statement = connection.createStatement()) {
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM tenants");
+
                 while (resultSet.next()){
                     tenants.add(resultSet.getString("id"));
                 }
-
             }
-        }catch (SQLException e){
-            logger.debug(e.getMessage());
         }
 
         return tenants;
