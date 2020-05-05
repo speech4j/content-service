@@ -11,6 +11,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.speech4j.contentservice.exception.TenantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -22,6 +23,8 @@ import static org.speech4j.contentservice.config.multitenancy.MultiTenantConstan
 
 @Component
 public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionProvider {
+    @Value("${liquibase.master_changelog}")
+    private String masterChangelogFile;
 
     private DataSource dataSource;
     private transient SpringLiquibase springLiquibase;
@@ -109,8 +112,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                 new ClassLoaderResourceAccessor(getClass().getClassLoader());
 
         try {
-            Liquibase liquibase = new Liquibase(
-                    "db/changelog/db.changelog-master.yaml", resourceAcessor, database);
+            Liquibase liquibase = new Liquibase(masterChangelogFile, resourceAcessor, database);
             liquibase.update(springLiquibase.getContexts());
 
         } catch (Exception e){
