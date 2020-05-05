@@ -1,6 +1,6 @@
 spring:
   main:
-    lazy-initialization: true
+    lazy-initialization: false
 ---
 # ===============================
 # Default connection pool
@@ -21,7 +21,7 @@ db:
 spring:
   datasource:
     driver: org.postgresql.Driver
-    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}?currentSchema=speech4j
+    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
     username: postgres
     password: qwerty123
   liquibase:

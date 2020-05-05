@@ -1,18 +1,11 @@
 package org.speech4j.contentservice.config.multitenancy;
 
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.exception.LiquibaseException;
-import liquibase.integration.spring.SpringLiquibase;
-import liquibase.resource.ClassLoaderResourceAccessor;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.speech4j.contentservice.exception.TenantNotFoundException;
-import org.speech4j.contentservice.migration.service.LiquibaseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -24,19 +17,12 @@ import static org.speech4j.contentservice.config.multitenancy.MultiTenantConstan
 
 @Component
 public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionProvider {
-    @Value("${liquibase.master_changelog}")
-    private String masterChangelogFile;
-
     private transient DataSource dataSource;
     private transient Logger logger = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 
-    private LiquibaseService liquibaseService;
-
     @Autowired
-    public MultiTenantConnectionProviderImpl(DataSource dataSource,
-                                             LiquibaseService liquibaseService) {
+    public MultiTenantConnectionProviderImpl(DataSource dataSource) {
         this.dataSource = dataSource;
-        this.liquibaseService = liquibaseService;
     }
 
     @Override
@@ -61,16 +47,12 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 
                     connection.setSchema(persistentTenant);
                     logger.debug("DATABASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
-
-                    //Updating of schema
-                    liquibaseService.updateSchema(connection, masterChangelogFile, persistentTenant);
-
                 }
 
             } else {
                 connection.setSchema(DEFAULT_TENANT_ID);
             }
-        } catch (SQLException | LiquibaseException e ) {
+        } catch (SQLException e) {
             throw new TenantNotFoundException("Tenant with specified identifier [" + tenantIdentifier + "] not found!");
         }
 
@@ -86,8 +68,9 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
             throw new HibernateException(
                     "Could not alter JDBC connection to specified schema [" + tenantIdentifier + "]", e
             );
+        }finally {
+            connection.close();
         }
-        connection.close();
     }
 
     @SuppressWarnings("rawtypes")
