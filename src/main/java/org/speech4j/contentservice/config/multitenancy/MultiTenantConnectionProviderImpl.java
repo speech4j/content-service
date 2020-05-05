@@ -31,7 +31,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     private transient DataSource dataSource;
     private transient SpringLiquibase springLiquibase;
 
-    private final Logger LOGGER = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
+    private transient Logger logger = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 
     @Autowired
     public MultiTenantConnectionProviderImpl(DataSource dataSource, SpringLiquibase springLiquibase) {
@@ -60,14 +60,14 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                 try (Statement ps = connection.createStatement()) {
 
                     connection.setSchema(persistentTenant);
-                    LOGGER.debug("DATABASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
+                    logger.debug("DATABASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
 
                     Database database = DatabaseFactory.getInstance()
                             .findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
                     database.setLiquibaseSchemaName(persistentTenant);
                     database.setDefaultSchemaName(persistentTenant);
-                    LOGGER.debug("LIQUIBASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
+                    logger.debug("LIQUIBASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
 
 
                     //Updating of schema
@@ -122,7 +122,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
             Liquibase liquibase = new Liquibase(masterChangelogFile, resourceAcessor, database);
             liquibase.update(springLiquibase.getContexts());
 
-            LOGGER.debug("LIQUIBASE: Schema was successfully updated!");
+            logger.debug("LIQUIBASE: Schema was successfully updated!");
         } catch (Exception e){
             throw new LiquibaseException("Error during the effort to update schema!");
         }
