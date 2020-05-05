@@ -28,10 +28,10 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     @Value("${liquibase.master_changelog}")
     private String masterChangelogFile;
 
-    private final DataSource dataSource;
+    private transient DataSource dataSource;
     private transient SpringLiquibase springLiquibase;
 
-    final static Logger LOGGER = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 
     @Autowired
     public MultiTenantConnectionProviderImpl(DataSource dataSource, SpringLiquibase springLiquibase) {
@@ -60,14 +60,14 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                 try (Statement ps = connection.createStatement()) {
 
                     connection.setSchema(persistentTenant);
-                    LOGGER.debug("DATABASE: Schema with id [" + persistentTenant + "] was successfully set as default!");
+                    LOGGER.debug("DATABASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
 
                     Database database = DatabaseFactory.getInstance()
                             .findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
                     database.setLiquibaseSchemaName(persistentTenant);
                     database.setDefaultSchemaName(persistentTenant);
-                    LOGGER.debug("LIQUIBASE: Schema with id [" + persistentTenant + "] was successfully set as default!");
+                    LOGGER.debug("LIQUIBASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
 
 
                     //Updating of schema
