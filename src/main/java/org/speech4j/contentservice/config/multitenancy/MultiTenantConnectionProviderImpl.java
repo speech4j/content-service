@@ -1,11 +1,11 @@
 package org.speech4j.contentservice.config.multitenancy;
 
-import org.hibernate.HibernateException;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.speech4j.contentservice.exception.InternalServerException;
 import org.speech4j.contentservice.exception.TenantNotFoundException;
+import org.speech4j.contentservice.migration.service.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +20,21 @@ import static org.speech4j.contentservice.config.multitenancy.MultiTenantConstan
 public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionProvider {
     private transient DataSource dataSource;
     private transient Logger logger = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
+    private TenantService tenantService;
 
     @Autowired
-    public MultiTenantConnectionProviderImpl(DataSource dataSource) {
+    public MultiTenantConnectionProviderImpl(DataSource dataSource, TenantService tenantService) {
         this.dataSource = dataSource;
+        this.tenantService = tenantService;
+    }
+
+
+    public TenantService getTenantService() {
+        return tenantService;
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
     }
 
     @Override
@@ -40,20 +51,26 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     public Connection getConnection(String tenantIdentifier) throws SQLException {
         final Connection connection = getAnyConnection();
         try {
-            if (tenantIdentifier != null && !tenantIdentifier.equals(DEFAULT_TENANT_ID)) {
-                // Create the schema
-                String persistentTenant = "tenant_" + tenantIdentifier;
 
+            if (
+                    tenantIdentifier != null
+                    && !tenantIdentifier.equals(DEFAULT_TENANT_ID)
+                    //Checking if specified tenant is in database even if this tenant will be created at runtime
+                    && tenantService.getAllTenants(dataSource).contains(tenantIdentifier)
+            ) {
                 try (Statement ps = connection.createStatement()) {
-                    connection.setSchema(persistentTenant);
+                    connection.setSchema(tenantIdentifier);
                     logger.debug("DATABASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
                 }
 
-            } else {
+            } else if (tenantIdentifier.equals(DEFAULT_TENANT_ID)){
                 connection.setSchema(DEFAULT_TENANT_ID);
+            } else {
+                throw new TenantNotFoundException("Tenant with specified identifier [" + tenantIdentifier + "] not found!");
             }
+
         }catch (SQLException e) {
-            throw new TenantNotFoundException("Tenant with specified identifier [" + tenantIdentifier + "] not found!");
+            throw new InternalServerException("Error during the switching to schema: [ " + tenantIdentifier + "]");
         }
 
         return connection;

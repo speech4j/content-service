@@ -17,7 +17,7 @@ public class MigrationInitBeanFailureAnalyzer extends AbstractFailureAnalyzer<Be
     }
 
     private String getAction(BeanCreationException ex) {
-        return String.format("Consider creating a bean with name [ %s ] as root problem.",
+        return String.format("Consider creating a bean with name [ %s ] as a root problem.",
                 ex.getBeanName());
     }
 }

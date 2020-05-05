@@ -10,13 +10,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 
 @ConditionalOnBean(MultiTenantConnectionProviderImpl.class)
@@ -25,27 +21,24 @@ public class MigrationInitBean {
     @Value("${liquibase.master_changelog}")
     private String masterChangelogFile;
 
-    private DataSource dataSource;
-    private MultiTenantConnectionProviderImpl multiTenantConnectionProvider;
+    private MultiTenantConnectionProviderImpl provider;
     private LiquibaseService liquibaseService;
 
     @Autowired
-    public MigrationInitBean(DataSource dataSource,
-                             MultiTenantConnectionProviderImpl multiTenantConnectionProvider,
+    public MigrationInitBean(MultiTenantConnectionProviderImpl provider,
                              LiquibaseService liquibaseService) {
-        this.dataSource = dataSource;
-        this.multiTenantConnectionProvider = multiTenantConnectionProvider;
+        this.provider = provider;
         this.liquibaseService = liquibaseService;
     }
 
     @PostConstruct
     public void init() throws SQLException{
-        List<String> tenants = getAllTenants();
+        Set<String> tenants = provider.getTenantService().getAllTenants(provider.getDataSource());
 
         if (!tenants.isEmpty()){
             tenants.forEach(tenant->{
 
-                try(Connection connection = multiTenantConnectionProvider.getConnection(tenant)) {
+                try(Connection connection = provider.getConnection(tenant)) {
                     liquibaseService.updateSchema(connection, masterChangelogFile, tenant);
                 } catch (SQLException| LiquibaseException e) {
                     throw new InternalServerException("Error during updating of database!");
@@ -55,23 +48,5 @@ public class MigrationInitBean {
 
         }
 
-    }
-
-
-    private List<String> getAllTenants() throws SQLException{
-        List<String> tenants = new ArrayList<>();
-
-        try (final Connection connection = dataSource.getConnection()){
-            connection.setSchema("metadata");
-            try(Statement statement = connection.createStatement()) {
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM tenants");
-
-                while (resultSet.next()){
-                    tenants.add(resultSet.getString("id"));
-                }
-            }
-        }
-
-        return tenants;
     }
 }
