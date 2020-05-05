@@ -9,6 +9,8 @@ import liquibase.integration.spring.SpringLiquibase;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.speech4j.contentservice.exception.TenantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +28,10 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     @Value("${liquibase.master_changelog}")
     private String masterChangelogFile;
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
     private transient SpringLiquibase springLiquibase;
+
+    final static Logger LOGGER = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 
     @Autowired
     public MultiTenantConnectionProviderImpl(DataSource dataSource, SpringLiquibase springLiquibase) {
@@ -56,12 +60,15 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                 try (Statement ps = connection.createStatement()) {
 
                     connection.setSchema(persistentTenant);
+                    LOGGER.debug("DATABASE: Schema with id [" + persistentTenant + "] was successfully set as default!");
 
                     Database database = DatabaseFactory.getInstance()
                             .findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
                     database.setLiquibaseSchemaName(persistentTenant);
                     database.setDefaultSchemaName(persistentTenant);
+                    LOGGER.debug("LIQUIBASE: Schema with id [" + persistentTenant + "] was successfully set as default!");
+
 
                     //Updating of schema
                     updateSchema(database);
@@ -115,6 +122,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
             Liquibase liquibase = new Liquibase(masterChangelogFile, resourceAcessor, database);
             liquibase.update(springLiquibase.getContexts());
 
+            LOGGER.debug("LIQUIBASE: Schema was successfully updated!");
         } catch (Exception e){
             throw new LiquibaseException("Error during the effort to update schema!");
         }
