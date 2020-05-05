@@ -31,7 +31,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     private transient DataSource dataSource;
     private transient SpringLiquibase springLiquibase;
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 
     @Autowired
     public MultiTenantConnectionProviderImpl(DataSource dataSource, SpringLiquibase springLiquibase) {
