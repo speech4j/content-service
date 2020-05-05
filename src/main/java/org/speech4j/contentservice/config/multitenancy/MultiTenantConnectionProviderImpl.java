@@ -9,6 +9,7 @@ import liquibase.integration.spring.SpringLiquibase;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.speech4j.contentservice.exception.TenantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +52,6 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 
                 try (Statement ps = connection.createStatement()) {
 
-                    ps.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + persistentTenant);
                     connection.setSchema(persistentTenant);
 
                     Database database = DatabaseFactory.getInstance()
@@ -69,8 +69,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
                 connection.setSchema(DEFAULT_TENANT_ID);
             }
         } catch (SQLException | LiquibaseException e ) {
-            throw new HibernateException(
-                    "Could not alter JDBC connection to specified schema [" + tenantIdentifier + "]", e);
+            throw new TenantNotFoundException("Tenant with specified identifier [" + tenantIdentifier + "] not found!");
         }
 
         return connection;

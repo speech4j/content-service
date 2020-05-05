@@ -51,20 +51,6 @@ logging.level:
   org.hibernate.type: TRACE
 ---
 # ===============================
-# SCHEMA-GENERATION / HIBERNATE
-# ===============================
-#spring:
-#  jpa:
-#    properties:
-#      javax:
-#        persistence:
-#          schema-generation:
-#            create-source: metadata
-#            scripts:
-#              action: create
-#              create-target: schema-schema-script.sql
----
-# ===============================
 # SWAGGER
 # ===============================
 springdoc:
