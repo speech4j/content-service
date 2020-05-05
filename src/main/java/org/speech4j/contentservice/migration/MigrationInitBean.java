@@ -47,7 +47,6 @@ public class MigrationInitBean {
 
                 try(Connection connection = multiTenantConnectionProvider.getConnection(tenant)) {
                     liquibaseService.updateSchema(connection, masterChangelogFile, tenant);
-                    throw new SQLException();
                 } catch (SQLException| LiquibaseException e) {
                     throw new InternalServerException("Error during updating of database!");
                 }

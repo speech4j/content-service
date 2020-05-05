@@ -52,7 +52,6 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     private final String exceptionMessage = "Content not found!";
     private List<ContentRequestDto> contentList;
     private List<ContentResponseDto> contentListResponse;
-    //ToDo remove later
     private String tenantId = "speech4j";
     private String contentId;
 
