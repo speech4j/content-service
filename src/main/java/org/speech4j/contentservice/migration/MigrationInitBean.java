@@ -22,7 +22,7 @@ import java.util.Set;
 @ConditionalOnBean(MultiTenantConnectionProviderImpl.class)
 @Component
 public class MigrationInitBean {
-    private transient Logger logger = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
+    private Logger logger = LoggerFactory.getLogger(MigrationInitBean.class);
 
     @Value("${liquibase.master_changelog}")
     private String masterChangelogFile;

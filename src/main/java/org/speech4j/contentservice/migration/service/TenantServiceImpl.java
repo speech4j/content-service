@@ -20,10 +20,11 @@ public class TenantServiceImpl implements TenantService{
         try (final Connection connection = dataSource.getConnection()){
             connection.setSchema("metadata");
             try(Statement statement = connection.createStatement()) {
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM tenants");
+                try(ResultSet resultSet = statement.executeQuery("SELECT * FROM tenants")) {
 
-                while (resultSet.next()){
-                    tenants.add(resultSet.getString("id"));
+                    while (resultSet.next()) {
+                        tenants.add(resultSet.getString("id"));
+                    }
                 }
             }
         }
