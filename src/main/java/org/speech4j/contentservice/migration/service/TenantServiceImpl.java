@@ -17,14 +17,14 @@ public class TenantServiceImpl implements TenantService{
     public Set<String> getAllTenants(DataSource dataSource) throws SQLException {
         Set<String> tenants = new HashSet<>();
 
-        try (final Connection connection = dataSource.getConnection()){
+        try(final Connection connection = dataSource.getConnection()){
             connection.setSchema("metadata");
-            try(Statement statement = connection.createStatement()) {
-                try(ResultSet resultSet = statement.executeQuery("SELECT * FROM tenants")) {
-
-                    while (resultSet.next()) {
-                        tenants.add(resultSet.getString("id"));
-                    }
+            try (
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery("SELECT * FROM tenants")
+            ){
+                while (resultSet.next()) {
+                    tenants.add(resultSet.getString("id"));
                 }
             }
         }
