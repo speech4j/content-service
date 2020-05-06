@@ -131,6 +131,23 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
     @Test
+    public void createContentTestWitFakeTenantId_unsuccessFlow() {
+        final String url = "/api/tenants/" +  0 + "/contents";
+
+        request = new HttpEntity<>(testContent, headers);
+
+        ResponseEntity<ResponseMessageDto> response =
+                this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
+
+        //Verify this exception because of validation missed field
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals("Could not open JPA EntityManager for transaction; " +
+                "nested exception is org.speech4j.contentservice.exception.TenantNotFoundException: " +
+                "Tenant with specified identifier [0] not found!", response.getBody().getMessage());
+    }
+
+
+    @Test
     public void findByIdTest_successFlow() {
         ResponseEntity<ContentResponseDto> response
                 = template.exchange("/api/tenants/" +  tenantId + "/contents/" + contentId, HttpMethod.GET, null, ContentResponseDto.class);
