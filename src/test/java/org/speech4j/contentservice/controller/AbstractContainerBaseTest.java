@@ -11,10 +11,12 @@ public class AbstractContainerBaseTest {
     static PostgreSQLContainer postgreSQLContainer;
 
     static {
-        postgreSQLContainer = new PostgreSQLContainer()
+        postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer()
                 .withPassword("postgres")
                 .withUsername("postgres")
-                .withDatabaseName("tenant_db");
+                .withDatabaseName("tenant_db")
+                .withInitScript("data/init_data.sql");
+
         postgreSQLContainer.start();
 
         System.setProperty("spring.datasource.url", postgreSQLContainer.getJdbcUrl());
