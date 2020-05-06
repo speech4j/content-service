@@ -25,7 +25,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +58,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     private WireMockServer wireMockServer;
 
     @BeforeEach
-    public void setUp() throws URISyntaxException, SQLException {
+    public void setUp() throws URISyntaxException{
         //Mocking the remote service
         wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8082));
         wireMockServer.start();
