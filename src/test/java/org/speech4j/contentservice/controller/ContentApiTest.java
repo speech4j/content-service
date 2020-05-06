@@ -139,11 +139,26 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         ResponseEntity<ResponseMessageDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
 
-        //Verify this exception because of validation missed field
+        //Verify this exception because of fake tenant id
         assertEquals(404, response.getStatusCodeValue());
         assertEquals("Could not open JPA EntityManager for transaction; " +
                 "nested exception is org.speech4j.contentservice.exception.TenantNotFoundException: " +
                 "Tenant with specified identifier [0] not found!", response.getBody().getMessage());
+    }
+
+    @Test
+    public void createContentTestWithNullPathVariable_unsuccessFlow() {
+        final String url = "/api/tenants/" +  null + "/contents";
+
+        ResponseEntity<ResponseMessageDto> response =
+                this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
+
+
+        //Verify this exception because of null tenant id
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals("Could not open JPA EntityManager for transaction; " +
+                "nested exception is org.speech4j.contentservice.exception.TenantNotFoundException: " +
+                "Tenant with specified identifier [null] not found!", response.getBody().getMessage());
     }
 
 
