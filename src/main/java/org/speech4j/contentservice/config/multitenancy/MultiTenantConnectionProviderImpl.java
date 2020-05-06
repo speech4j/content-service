@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static org.speech4j.contentservice.config.multitenancy.MultiTenantConstants.DEFAULT_TENANT_ID;
 
@@ -26,15 +25,6 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     public MultiTenantConnectionProviderImpl(DataSource dataSource, TenantService tenantService) {
         this.dataSource = dataSource;
         this.tenantService = tenantService;
-    }
-
-
-    public TenantService getTenantService() {
-        return tenantService;
-    }
-
-    public DataSource getDataSource() {
-        return dataSource;
     }
 
     @Override
@@ -51,20 +41,14 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     public Connection getConnection(String tenantIdentifier) throws SQLException {
         final Connection connection = getAnyConnection();
         try {
-
             if (
                     tenantIdentifier != null
-                    && !tenantIdentifier.equals(DEFAULT_TENANT_ID)
                     //Checking if specified tenant is in database even if this tenant will be created at runtime
                     && tenantService.getAllTenants(dataSource).contains(tenantIdentifier)
             ) {
-                try (Statement ps = connection.createStatement()) {
                     connection.setSchema(tenantIdentifier);
                     logger.debug("DATABASE: Schema with id [{}] was successfully set as default!", tenantIdentifier);
-                }
 
-            } else if (tenantIdentifier.equals(DEFAULT_TENANT_ID)){
-                connection.setSchema(DEFAULT_TENANT_ID);
             } else {
                 throw new TenantNotFoundException("Tenant with specified identifier [" + tenantIdentifier + "] not found!");
             }
