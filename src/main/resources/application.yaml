@@ -15,7 +15,7 @@ spring:
 # DATABASE
 # ===============================
 db:
-  host: db
+  host: localhost
   port: 5432
   name: tenant_db
 spring:
@@ -23,7 +23,7 @@ spring:
     driver: org.postgresql.Driver
     url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
     username: postgres
-    password: qwerty123
+    password: postgres
   liquibase:
     default-schema: speech4j
 ---

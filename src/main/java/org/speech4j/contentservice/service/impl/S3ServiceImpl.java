@@ -2,6 +2,7 @@ package org.speech4j.contentservice.service.impl;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.speech4j.contentservice.exception.InternalServerException;
 import org.speech4j.contentservice.service.S3Service;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -33,14 +35,14 @@ public class S3ServiceImpl implements S3Service {
     public String uploadAudioFile(String tenantId, MultipartFile multipartFile) {
         String fileUrl = "";
         try {
-            File file = convertMultiPartToFile(multipartFile);
+            InputStream inputStream = multipartFile.getInputStream();
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(inputStream.available());
+
             String fileName = generateFileName(tenantId, multipartFile);
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
-            amazonS3.putObject(
-                    bucketName,
-                    fileName,
-                    file
-            );
+
+            amazonS3.putObject(bucketName, fileName, inputStream, meta);
         } catch (SdkClientException | IOException e) {
             throw new InternalServerException("AWS server error!");
         }
@@ -55,15 +57,6 @@ public class S3ServiceImpl implements S3Service {
             amazonS3.deleteObject(bucketName, file.getKey());
         }
         amazonS3.deleteObject(bucketName, folderName);
-    }
-
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convertFile = new File(file.getOriginalFilename());
-        try(FileOutputStream fos = new FileOutputStream(convertFile)) {
-            fos.write(file.getBytes());
-        }
-
-        return convertFile;
     }
 
     private String generateFileName(String tenantId, MultipartFile multiPart) {
