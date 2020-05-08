@@ -4,6 +4,9 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
+/**
+ *  https://www.baeldung.com/spring-boot-failure-analyzer
+ */
 public class MigrationInitBeanFailureAnalyzer extends AbstractFailureAnalyzer<BeanCreationException> {
     @Override
     protected FailureAnalysis analyze(Throwable rootFailure, BeanCreationException cause) {

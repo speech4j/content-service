@@ -1,5 +1,6 @@
 package org.speech4j.contentservice.migration.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class TenantServiceImpl implements TenantService{
 
     @Override
@@ -29,6 +31,7 @@ public class TenantServiceImpl implements TenantService{
             }
         }
 
+        log.debug("TENANT-SERVICE: All the tenants were retrieved successfully!");
         return tenants;
     }
 }

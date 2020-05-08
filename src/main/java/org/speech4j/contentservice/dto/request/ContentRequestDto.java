@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.speech4j.contentservice.dto.TagDto;
-import org.speech4j.contentservice.dto.validation.ExistData;
-import org.speech4j.contentservice.dto.validation.NewData;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -23,10 +21,10 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 public class ContentRequestDto {
-    @NotEmpty(groups = {NewData.class, ExistData.class}, message = "{field.not.empty}")
+    @NotEmpty( message = "{field.not.empty}")
     private List<TagDto> tags;
-    @NotBlank(groups = {NewData.class, ExistData.class}, message = "{field.not.empty}")
+    @NotBlank( message = "{field.not.empty}")
     private String contentUrl;
-    @NotBlank(groups = {NewData.class, ExistData.class}, message = "{field.not.empty}")
+    @NotBlank( message = "{field.not.empty}")
     private String transcript;
 }

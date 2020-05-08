@@ -11,7 +11,7 @@ public class AbstractContainerBaseTest {
     static PostgreSQLContainer postgreSQLContainer;
 
     static {
-        postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer()
+        postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres:12.2")
                 .withPassword("postgres")
                 .withUsername("postgres")
                 .withDatabaseName("tenant_db")

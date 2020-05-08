@@ -1,5 +1,6 @@
 package org.speech4j.contentservice.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.speech4j.contentservice.dto.response.ConfigDto;
 import org.speech4j.contentservice.entity.Content;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class ContentServiceImpl implements ContentService<Content> {
     @Value(value = "${remote.tenant-service.url}")
     private String remoteServiceURL;
@@ -35,12 +37,16 @@ public class ContentServiceImpl implements ContentService<Content> {
     @Override
     public Content create(Content entity) {
         //List<ConfigDto> configs = getAllConfigByTenantId(entity.getTenantGuid());
-        return contentRepository.save(entity);
+        Content content = contentRepository.save(entity);
+        log.debug("CONTENT-SERVICE: Content with [ id: {}] was successfully created!", entity.getGuid());
+        return content;
     }
 
     @Override
     public Content findById(String id) {
-        return findByIdOrThrowException(id);
+        Content content = findByIdOrThrowException(id);
+        log.debug("CONTENT-SERVICE: Content with [ id: {}] was successfully found!", id);
+        return content;
     }
 
     @Override
@@ -49,18 +55,23 @@ public class ContentServiceImpl implements ContentService<Content> {
         content.setContentUrl(entity.getContentUrl());
         content.setTranscript(entity.getTranscript());
 
-        return contentRepository.save(content);
+        Content updatedContent = contentRepository.save(content);
+        log.debug("CONTENT-SERVICE: Content with [ id: {}] was successfully updated!", id);
+        return updatedContent;
     }
 
     @Override
     public void deleteById(String id) {
         findByIdOrThrowException(id);
         contentRepository.deleteById(id);
+        log.debug("CONTENT-SERVICE: Content with [ id: {}] was successfully deleted!", id);
     }
 
     @Override
     public Page<Content> findAllByTags(String tenantId, Set<String> tags, Pageable pageable) {
-        return contentRepository.findAllByTags(tenantId, tags, pageable);
+        Page<Content> contents = contentRepository.findAllByTags(tenantId, tags, pageable);
+        log.debug("CONTENT-SERVICE: Contents with [ tenantId: {}] were successfully found!", tenantId);
+        return contents;
     }
 
     private Content findByIdOrThrowException(String id) {
@@ -73,6 +84,8 @@ public class ContentServiceImpl implements ContentService<Content> {
         String url = remoteServiceURL + tenantId + "/configs";
         ResponseEntity<List<ConfigDto>> response =
                 template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ConfigDto>>(){});
+
+        log.debug("CONTENT-SERVICE: Configs with [ tenantId: {}] were successfully got from tenant-service!", tenantId);
         return response.getBody();
     }
 }

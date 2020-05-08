@@ -1,7 +1,7 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
-    <changeSet author="mslob (generated)" id="1588161088483-1">
-        <createTable tableName="content_tag">
+    <changeSet author="mslob (generated)" id="1588925913279-1">
+        <createTable tableName="content_content_tag">
             <column name="content_guid" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -10,28 +10,34 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1588161088483-2">
-        <createTable tableName="contents">
+    <changeSet author="mslob (generated)" id="1588925913279-2">
+        <createTable tableName="content_contents">
             <column name="guid" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="contentsPK"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="content_contentsPK"/>
             </column>
             <column name="contenturl" type="VARCHAR(255)"/>
             <column name="tenantguid" type="VARCHAR(255)"/>
             <column name="transcript" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1588161088483-3">
-        <createTable tableName="tags">
+    <changeSet author="mslob (generated)" id="1588925913279-3">
+        <createTable tableName="content_tags">
             <column name="guid" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="tagsPK"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="content_tagsPK"/>
             </column>
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1588161088483-4">
-        <addForeignKeyConstraint baseColumnNames="content_guid" baseTableName="content_tag" constraintName="FK2l23mx5lwgru4utx585oqaif" deferrable="false" initiallyDeferred="false" referencedColumnNames="guid" referencedTableName="contents" validate="true"/>
+    <changeSet author="mslob (generated)" id="1588925913279-4">
+        <addForeignKeyConstraint baseColumnNames="content_guid" baseTableName="content_content_tag" constraintName="FK1s24x9g7c6e1liq54n5klvwul" deferrable="false" initiallyDeferred="false" referencedColumnNames="guid" referencedTableName="content_contents" validate="true"/>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1588161088483-5">
-        <addForeignKeyConstraint baseColumnNames="tag_guid" baseTableName="content_tag" constraintName="FKh9vt45kepyh4s6x3m705h0eem" deferrable="false" initiallyDeferred="false" referencedColumnNames="guid" referencedTableName="tags" validate="true"/>
+    <changeSet author="mslob (generated)" id="1588925913279-5">
+        <addForeignKeyConstraint baseColumnNames="tag_guid" baseTableName="content_content_tag" constraintName="FKa0nyg2vy7jgach4nldsouybox" deferrable="false" initiallyDeferred="false" referencedColumnNames="guid" referencedTableName="content_tags" validate="true"/>
+    </changeSet>
+    <changeSet author="mslob (generated)" id="1588925913279-6">
+        <dropTable tableName="tenant_configs"/>
+    </changeSet>
+    <changeSet author="mslob (generated)" id="1588925913279-7">
+        <dropTable tableName="tenant_users"/>
     </changeSet>
 </databaseChangeLog>

@@ -4,6 +4,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import lombok.extern.slf4j.Slf4j;
 import org.speech4j.contentservice.exception.InternalServerException;
 import org.speech4j.contentservice.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 @Service
+@Slf4j
 public class S3ServiceImpl implements S3Service {
     @Value(value = "${aws.bucketName}")
     private String bucketName;
@@ -41,8 +41,9 @@ public class S3ServiceImpl implements S3Service {
 
             String fileName = generateFileName(tenantId, multipartFile);
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
-
             amazonS3.putObject(bucketName, fileName, inputStream, meta);
+
+            log.debug("S3-SERVICE: File was successfully uploaded to S3 bucket!");
         } catch (SdkClientException | IOException e) {
             throw new InternalServerException("AWS server error!");
         }
@@ -60,6 +61,6 @@ public class S3ServiceImpl implements S3Service {
     }
 
     private String generateFileName(String tenantId, MultipartFile multiPart) {
-        return  tenantId + "/" + multiPart.getOriginalFilename().replace(" ", "_");
+        return tenantId + "/" + multiPart.getOriginalFilename().replace(" ", "_");
     }
 }

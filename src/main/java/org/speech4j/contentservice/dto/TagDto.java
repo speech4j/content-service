@@ -1,7 +1,5 @@
 package org.speech4j.contentservice.dto;
 
-import org.speech4j.contentservice.dto.validation.ExistData;
-import org.speech4j.contentservice.dto.validation.NewData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -20,6 +18,6 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode
 @ToString
 public class TagDto {
-    @NotBlank(groups = {NewData.class, ExistData.class}, message = "{field.not.empty}")
+    @NotBlank(message = "{field.not.empty}")
     private String name;
 }

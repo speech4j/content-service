@@ -290,16 +290,11 @@ public class ContentApiTest extends AbstractContainerBaseTest {
                 .queryParam("size",1)
                 .build().encode().toUri();
 
-        ResponseEntity<ResponseMessageDto> response = template.exchange(
-                uri,
+        ResponseEntity<ResponseMessageDto> response = template.exchange(uri,
                 HttpMethod.GET, null, ResponseMessageDto.class);
 
         //Verify request isn't succeed
         checkEntityNotFoundException(response);
-    }
-
-    private void assertExpectedContentResource(ContentResponseDto content) {
-        assertThat(content.hasLink("self")).isTrue();
     }
 
     private void checkEntityNotFoundException(ResponseEntity<ResponseMessageDto> response){
