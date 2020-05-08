@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
+import org.speech4j.contentservice.dto.request.ContentUploadRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.entity.Content;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
@@ -170,16 +171,16 @@ public class ContentController {
             @Parameter(description = "Audio file for uploading to AWS S3", required = true)
             @RequestPart MultipartFile file,
             @Parameter(description = "Content OBJECT for saving to db with an audio url", required = true)
-            @RequestPart ContentRequestDto dto){
+            @RequestPart ContentUploadRequestDto dto){
         String url = s3Service.uploadAudioFile(tenantId, file);
 
-        Content content = contentMapper.toEntity(dto);
+        Content content = contentMapper.fromUploadEntity(dto);
         content.setTenantGuid(tenantId);
         content.setContentUrl(url);
         //Saving to db content item with a particular url
         contentService.create(content);
 
-        return "File uploaded successfully";
+        return "File was uploaded successfully!";
     }
 
     private void checkIfExist(String tenantId, String id){
