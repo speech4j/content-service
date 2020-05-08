@@ -50,13 +50,13 @@ public class ContentServiceImpl implements ContentService<Content> {
     }
 
     @Override
-    public Content update(Content entity, String id) {
-        Content content = findByIdOrThrowException(id);
+    public Content update(Content entity) {
+        Content content = findByIdOrThrowException(entity.getGuid());
         content.setContentUrl(entity.getContentUrl());
         content.setTranscript(entity.getTranscript());
 
         Content updatedContent = contentRepository.save(content);
-        log.debug("CONTENT-SERVICE: Content with [ id: {}] was successfully updated!", id);
+        log.debug("CONTENT-SERVICE: Content with [ id: {}] was successfully updated!", entity.getGuid());
         return updatedContent;
     }
 

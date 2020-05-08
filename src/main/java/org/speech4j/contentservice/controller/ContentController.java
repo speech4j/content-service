@@ -12,6 +12,8 @@ import org.speech4j.contentservice.mapper.ContentDtoMapper;
 import org.speech4j.contentservice.service.ContentService;
 import org.speech4j.contentservice.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,6 +23,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +45,8 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/tenants/{tenantId}/contents")
 public class ContentController {
+    @Value(value = "${aws.fileExtension}")
+    private String extension = ".mp3";
 
     private ContentService<Content> contentService;
     private ContentDtoMapper contentMapper;
@@ -113,7 +118,9 @@ public class ContentController {
             @PathVariable String contentId
     ) {
         checkIfExist(tenantId, contentId);
-        return contentMapper.toDto(contentService.update(contentMapper.toEntity(dto), contentId))
+        Content content = contentMapper.toEntity(dto);
+        content.setGuid(contentId);
+        return contentMapper.toDto(contentService.update(content))
                 .add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString()));
     }
 
@@ -156,7 +163,7 @@ public class ContentController {
         contentService.deleteById(contentId);
     }
 
-    @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{contentId}/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Upload an audio file and save the content with a particular URL to database by the tenant ID",
@@ -171,20 +178,47 @@ public class ContentController {
             @Parameter(description = "Audio file for uploading to AWS S3", required = true)
             @RequestPart MultipartFile file,
             @Parameter(description = "Content OBJECT for saving to db with an audio url", required = true)
-            @RequestPart ContentUploadRequestDto dto){
-        String url = s3Service.uploadAudioFile(tenantId, file);
-
+            @RequestPart ContentUploadRequestDto dto
+    ){
         Content content = contentMapper.fromUploadEntity(dto);
         content.setTenantGuid(tenantId);
-        content.setContentUrl(url);
-        //Saving to db content item with a particular url
-        contentService.create(content);
+        Content createdContent = contentService.create(content);
+
+        String url = s3Service.uploadAudioFile(tenantId, createdContent.getGuid(), file);
+        createdContent.setContentUrl(url);
+        contentService.update(createdContent);
 
         return "File was uploaded successfully!";
     }
 
-    private void checkIfExist(String tenantId, String id){
-        Content content = contentService.findById(id);
+    @GetMapping(value = "/{contentId}/download")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Download an audio file by the tenant ID and content ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Content is updated"),
+                    @ApiResponse(responseCode = "500", description = "AWS server error"),
+                    @ApiResponse(responseCode = "400", description = "Validation exception"),
+                    @ApiResponse(responseCode = "404", description = "Content not found")})
+    public ResponseEntity<ByteArrayResource> getAudioFile(
+            @Parameter(description = "Tenant ID for get", required = true)
+            @PathVariable String tenantId,
+            @Parameter(description = "Content ID for get", required = true)
+            @PathVariable String contentId
+    ){
+        checkIfExist(tenantId, contentId);
+        final ByteArrayResource byteArrayResource =
+                new ByteArrayResource(s3Service.downloadAudioFile(tenantId, contentId));
+        return ResponseEntity
+                .ok()
+                .contentLength(byteArrayResource.contentLength())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header("Content-Disposition", "attachment; filename=" + contentId + extension)
+                .body(byteArrayResource);
+    }
+
+    private void checkIfExist(String tenantId, String contentId){
+        Content content = contentService.findById(contentId);
         if (!content.getTenantGuid().equals(tenantId)) {
             throw new ContentNotFoundException("Content not found!");
         }

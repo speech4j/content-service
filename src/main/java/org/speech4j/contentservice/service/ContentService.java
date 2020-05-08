@@ -10,7 +10,7 @@ public interface ContentService<E> {
 
     E findById(String id);
 
-    E update(E entity, String id);
+    E update(E entity);
 
     void deleteById(String id);
 
