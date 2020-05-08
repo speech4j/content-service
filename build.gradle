@@ -108,7 +108,7 @@ liquibase {
             username prop.getProperty('username')
             password prop.getProperty('password')
             referenceDriver prop.getProperty('referenceDriver')
-            excludeObjects 'table:users,configs'
+            excludeObjects 'table:tenant_users,teant_configs'
         }
     }
 }

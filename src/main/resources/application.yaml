@@ -68,7 +68,7 @@ aws:
   accessKey: AKIA2JLHKQCPETFM4J7D
   secretKey: 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
   bucketName: speech4j-content-bucket
-  endpointUrl: https://speech4j-content-bucket.s3.us-east-2.amazonaws.com/
+  endpointUrl: https://speech4j-content-bucket.s3.us-east-2.amazonaws.com
 
 # ===============================
 # MULTIPART (MultipartProperties)

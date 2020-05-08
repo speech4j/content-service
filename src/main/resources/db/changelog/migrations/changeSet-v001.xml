@@ -34,10 +34,4 @@
     <changeSet author="mslob (generated)" id="1588925913279-5">
         <addForeignKeyConstraint baseColumnNames="tag_guid" baseTableName="content_content_tag" constraintName="FKa0nyg2vy7jgach4nldsouybox" deferrable="false" initiallyDeferred="false" referencedColumnNames="guid" referencedTableName="content_tags" validate="true"/>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1588925913279-6">
-        <dropTable tableName="tenant_configs"/>
-    </changeSet>
-    <changeSet author="mslob (generated)" id="1588925913279-7">
-        <dropTable tableName="tenant_users"/>
-    </changeSet>
 </databaseChangeLog>
