@@ -91,13 +91,20 @@ project.tasks["sonarqube"].dependsOn "jacocoTestReport"
 //Liquibase configurations
 Properties prop = new Properties()
 prop.load(new FileInputStream("src/main/resources/liquibase.properties"))
+def changeLogFilePath = "$projectDir/src/main/resources/db/changelog/migrations"
+int fileCounter = new File(changeLogFilePath).list().length + 1
 
-def diffLog = "$projectDir/src/main/resources/db/changelog/migrations/" +
-        new Date().format("yyyy-MM-dd, HH:mm:ss-") + "v001.xml"
-
-if(project.hasProperty('diffChangeLogFile')){
-    diffLog = diffChangeLogFile
+def getFileVersion = { number ->
+    def count = 0
+    while(number > 1){
+        number /= 10
+        count++
+    }
+    return count == 0 || count == 1 ? "00" : (count == 2) ? "0" : ""
 }
+
+def fileVersion = getFileVersion(fileCounter) + fileCounter
+def diffLog = changeLogFilePath + "/content-changelog-v" + fileVersion + ".xml"
 
 liquibase {
     activities {
@@ -108,9 +115,8 @@ liquibase {
             username prop.getProperty('username')
             password prop.getProperty('password')
             referenceDriver prop.getProperty('referenceDriver')
-            excludeObjects 'table:tenant_users,teant_configs'
+            excludeObjects 'table:tenant_users,tenant_configs'
         }
     }
 }
-
 
