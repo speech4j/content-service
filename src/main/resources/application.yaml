@@ -69,7 +69,6 @@ aws:
   secretKey: ElIwuD+eUa0UXbkE9NZJlcbdBIWlwqNa8X+dHLJp
   bucketName: speech4j-content-bucket
   endpointUrl: https://speech4j-content-bucket.s3.us-east-2.amazonaws.com
-  fileExtension: .mp3
 
 # ===============================
 # MULTIPART (MultipartProperties)

@@ -12,7 +12,6 @@ import org.speech4j.contentservice.mapper.ContentDtoMapper;
 import org.speech4j.contentservice.service.ContentService;
 import org.speech4j.contentservice.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,9 +44,6 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/tenants/{tenantId}/contents")
 public class ContentController {
-    @Value(value = "${aws.fileExtension}")
-    private String extension = ".mp3";
-
     private ContentService<Content> contentService;
     private ContentDtoMapper contentMapper;
     private S3Service s3Service;
@@ -206,13 +202,16 @@ public class ContentController {
             @PathVariable String contentId
     ){
         checkIfExist(tenantId, contentId);
+        String contentUrl = contentService.findById(contentId).getContentUrl();
+        String filename = contentUrl.substring(contentUrl.lastIndexOf("/") + 1);
+
         final ByteArrayResource byteArrayResource =
-                new ByteArrayResource(s3Service.downloadAudioFile(tenantId, contentId));
+                new ByteArrayResource(s3Service.downloadAudioFile(tenantId + "/" + filename));
         return ResponseEntity
                 .ok()
                 .contentLength(byteArrayResource.contentLength())
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .header("Content-Disposition", "attachment; filename=" + contentId + extension)
+                .header("Content-Disposition", "attachment; filename=" + filename)
                 .body(byteArrayResource);
     }
 

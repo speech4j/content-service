@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
@@ -18,14 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 @Service
 @Slf4j
 public class S3ServiceImpl implements S3Service {
-    @Value(value = "${aws.fileExtension}")
-    private String extension = ".mp3";
-
     @Value(value = "${aws.bucketName}")
     private String bucketName;
     @Value(value = "${aws.endpointUrl}")
@@ -45,7 +40,9 @@ public class S3ServiceImpl implements S3Service {
             InputStream inputStream = multipartFile.getInputStream();
             ObjectMetadata meta = new ObjectMetadata();
             meta.setContentLength(inputStream.available());
-            String fileName = getFileName(tenantId,contentId);
+
+            String extension = getFileExtension(multipartFile.getOriginalFilename());
+            String fileName = tenantId + "/" + contentId + extension;
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
 
             amazonS3.putObject(bucketName, fileName, inputStream, meta);
@@ -57,10 +54,9 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public byte[] downloadAudioFile(String tenantId, String contentId) {
-        String fileName = getFileName(tenantId,contentId);
+    public byte[] downloadAudioFile(String filename) {
         byte[] content = null;
-        try(S3Object s3Object = amazonS3.getObject(bucketName, fileName)){
+        try(S3Object s3Object = amazonS3.getObject(bucketName, filename)){
             S3ObjectInputStream inputStream = s3Object.getObjectContent();
             content = IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
@@ -69,17 +65,7 @@ public class S3ServiceImpl implements S3Service {
         return content;
     }
 
-    @Override
-    public void deleteFolder(String bucketName, String folderName) {
-        List fileList = amazonS3.listObjects(bucketName, folderName).getObjectSummaries();
-        for (Object object : fileList) {
-            S3ObjectSummary file = (S3ObjectSummary) object;
-            amazonS3.deleteObject(bucketName, file.getKey());
-        }
-        amazonS3.deleteObject(bucketName, folderName);
-    }
-
-    private String getFileName(String tenantId, String contentId) {
-        return tenantId + "/" + contentId + extension;
+    private String getFileExtension(String filename){
+        return filename.substring(filename.lastIndexOf("."));
     }
 }
