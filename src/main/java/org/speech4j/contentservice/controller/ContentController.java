@@ -143,8 +143,7 @@ public class ContentController {
         if (contents.isEmpty()){
             throw new ContentNotFoundException("Content not found!");
         }
-        PagedModel<ContentResponseDto> models = pagedResourcesAssembler.toModel(contents, contentMapper);
-        return models;
+        return pagedResourcesAssembler.toModel(contents, contentMapper);
     }
 
     @DeleteMapping("/{contentId}")
