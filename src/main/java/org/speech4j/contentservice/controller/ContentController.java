@@ -203,7 +203,7 @@ public class ContentController {
     ){
         checkIfExist(tenantId, contentId);
         String contentUrl = contentService.findById(contentId).getContentUrl();
-        String filename = contentUrl.substring(contentUrl.lastIndexOf("/") + 1);
+        String filename = contentUrl.substring(contentUrl.lastIndexOf('/') + 1);
 
         final ByteArrayResource byteArrayResource =
                 new ByteArrayResource(s3Service.downloadAudioFile(tenantId + "/" + filename));

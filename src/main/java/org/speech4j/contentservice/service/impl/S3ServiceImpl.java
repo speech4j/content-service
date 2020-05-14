@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -42,10 +43,10 @@ public class S3ServiceImpl implements S3Service {
             meta.setContentLength(inputStream.available());
 
             String extension = getFileExtension(multipartFile.getOriginalFilename());
-            String fileName = tenantId + "/" + contentId + extension;
+            File fileName = new File(tenantId , contentId + extension);
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
 
-            amazonS3.putObject(bucketName, fileName, inputStream, meta);
+            amazonS3.putObject(bucketName, fileName.toString(), inputStream, meta);
             log.debug("S3-SERVICE: File was successfully uploaded to S3 bucket!");
         } catch (SdkClientException | IOException e) {
             throw new InternalServerException("AWS server error!");
@@ -66,6 +67,6 @@ public class S3ServiceImpl implements S3Service {
     }
 
     private String getFileExtension(String filename){
-        return filename.substring(filename.lastIndexOf("."));
+        return filename.substring(filename.lastIndexOf('.'));
     }
 }
