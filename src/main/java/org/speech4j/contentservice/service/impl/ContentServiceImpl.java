@@ -22,21 +22,15 @@ import java.util.Set;
 @Service
 @Slf4j
 public class ContentServiceImpl implements ContentService<Content> {
-    @Value(value = "${remote.tenant-service.url}")
-    private String remoteServiceURL;
-
     private ContentBoxRepository contentRepository;
-    private RestTemplate template;
 
     @Autowired
     public ContentServiceImpl(ContentBoxRepository contentRepository) {
         this.contentRepository = contentRepository;
-        this.template = new RestTemplate();
     }
 
     @Override
     public Content create(Content entity) {
-        //List<ConfigDto> configs = getAllConfigByTenantId(entity.getTenantGuid());
         Content content = contentRepository.save(entity);
         log.debug("CONTENT-SERVICE: Content with [ id: {}] was successfully created!", entity.getGuid());
         return content;
@@ -78,14 +72,5 @@ public class ContentServiceImpl implements ContentService<Content> {
         //Checking if user is found
         return contentRepository.findById(id)
                 .orElseThrow(() -> new ContentNotFoundException("Content not found!"));
-    }
-
-    private List<ConfigDto> getAllConfigByTenantId(String tenantId) {
-        String url = remoteServiceURL + tenantId + "/configs";
-        ResponseEntity<List<ConfigDto>> response =
-                template.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ConfigDto>>(){});
-
-        log.debug("CONTENT-SERVICE: Configs with [ tenantId: {}] were successfully got from tenant-service!", tenantId);
-        return response.getBody();
     }
 }

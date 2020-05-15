@@ -1,8 +1,7 @@
 package org.speech4j.contentservice.migration;
 
 import liquibase.exception.LiquibaseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.speech4j.contentservice.config.multitenancy.MultiTenantConnectionProviderImpl;
 import org.speech4j.contentservice.exception.InternalServerException;
 import org.speech4j.contentservice.migration.service.LiquibaseService;
@@ -21,9 +20,8 @@ import java.util.Set;
 
 @ConditionalOnBean(MultiTenantConnectionProviderImpl.class)
 @Component
+@Slf4j
 public class MigrationInitBean {
-    private Logger logger = LoggerFactory.getLogger(MigrationInitBean.class);
-
     @Value("${liquibase.master_changelog}")
     private String masterChangelogFile;
 
@@ -49,7 +47,7 @@ public class MigrationInitBean {
 
                 try(Connection connection = dataSource.getConnection()) {
                     connection.setSchema(tenant);
-                    logger.debug("DATABASE: Schema with id [{}] was successfully set as default!", tenant);
+                    log.info("DATABASE: Schema with id [{}] was successfully set as default!", tenant);
 
                     liquibaseService.updateSchema(connection, masterChangelogFile, tenant);
 

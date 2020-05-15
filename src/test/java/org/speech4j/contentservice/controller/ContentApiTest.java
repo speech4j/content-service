@@ -1,8 +1,5 @@
 package org.speech4j.contentservice.controller;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.speech4j.contentservice.ContentServiceApplication;
@@ -29,22 +26,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.speech4j.contentservice.util.DataUtil.getListOfContents;
 import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomNumeric;
 
 
+@AutoConfigureMockMvc
 @SpringBootTest(classes = ContentServiceApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
 public class ContentApiTest extends AbstractContainerBaseTest {
     @Autowired
     private TestRestTemplate template;
-
     private HttpHeaders headers = new HttpHeaders();
     private HttpEntity<ContentRequestDto> request;
     private ContentRequestDto testContent;
@@ -55,15 +48,9 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     private String tenantId = "speech4j";
     private String contentId;
 
-    private WireMockServer wireMockServer;
 
     @BeforeEach
     public void setUp() throws URISyntaxException{
-        //Mocking the remote service
-        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8082));
-        wireMockServer.start();
-        mockRemoteService();
-
         headers.setContentType(MediaType.APPLICATION_JSON);
         //Initializing of test content
         testContent = new ContentRequestDto();
@@ -81,12 +68,6 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         contentList = getListOfContents();
         contentListResponse = populateDB(contentList);
         contentId = contentListResponse.get(0).getContentGuid();
-    }
-
-    @AfterEach
-    public void noMoreWireMock() {
-        wireMockServer.stop();
-        wireMockServer = null;
     }
 
     @Test
@@ -314,14 +295,4 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
         return contentListResponse;
     }
-
-    private void mockRemoteService() {
-        wireMockServer.stubFor(get(urlEqualTo("/tenants/" + tenantId + "/configs"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("response.json")
-                ));
-    }
-
 }

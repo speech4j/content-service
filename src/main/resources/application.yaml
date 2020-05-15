@@ -65,10 +65,8 @@ remote:
 # S3
 # ===============================
 aws:
-  accessKey: ${AWS_ACCESS_KEY:MAKIA2JLHKQCPETFM4J7D}
-  secretKey: ${AWS_SECRET_KEY:ElIwuD+eUa0UXbkE9NZJlcbdBIWlwqNa8X+dHLJpM}
-  bucketName: ${AWS_BUCKETNAME:speech4j-content-bucket}
-  endpointUrl: ${AWS_ENDPOINT_URL:https://speech4j-content-bucket.s3.us-east-2.amazonaws.com}
+  bucketName: ${AWS_BUCKET_NAME:aws-bucket}
+  endpointUrl: ${AWS_ENDPOINT_URL:aws-url}
 
 # ===============================
 # MULTIPART (MultipartProperties)
