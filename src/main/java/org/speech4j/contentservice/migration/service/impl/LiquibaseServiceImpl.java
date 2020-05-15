@@ -1,4 +1,4 @@
-package org.speech4j.contentservice.migration.service;
+package org.speech4j.contentservice.migration.service.impl;
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -8,6 +8,7 @@ import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import lombok.extern.slf4j.Slf4j;
+import org.speech4j.contentservice.migration.service.LiquibaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

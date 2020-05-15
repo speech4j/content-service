@@ -19,6 +19,5 @@ import java.util.Map;
 public class ConfigDto {
     private String id;
     private ApiName apiName;
-    private String tenantId;
     private Map<String, Object> credentials;
 }

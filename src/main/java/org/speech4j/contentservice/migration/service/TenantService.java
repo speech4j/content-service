@@ -1,9 +1,8 @@
 package org.speech4j.contentservice.migration.service;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Set;
+import java.util.List;
 
 public interface TenantService {
-    Set<String> getAllTenants(DataSource dataSource) throws SQLException;
+    List<String> getAllTenants() throws SQLException;
 }
