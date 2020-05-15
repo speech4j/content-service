@@ -1,23 +1,18 @@
 package org.speech4j.contentservice.controller;
 
-import com.amazonaws.services.kinesisvideo.model.APIName;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.speech4j.contentservice.dto.response.ApiName;
 import org.speech4j.contentservice.dto.response.ConfigDto;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -46,7 +41,6 @@ public class AbstractContainerBaseTest {
     @Test
     void isRunningContainer(){
         assertTrue(postgreSQLContainer.isRunning());
-        String a = System.getProperty("aws.accessKey");
     }
 
     private void mockRemoteService() {
@@ -61,11 +55,8 @@ public class AbstractContainerBaseTest {
         config.setApiName(ApiName.AWS);
         config.setCredentials(credentials);
 
-        List<ConfigDto> configs = new ArrayList<>();
-        configs.add(config);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.convertValue(configs, JsonNode.class);
-
+        JsonNode node = new ObjectMapper()
+                .convertValue(Arrays.asList(config), JsonNode.class);
         //Mocking remote service
         wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8082));
         wireMockServer.start();

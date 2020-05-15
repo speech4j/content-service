@@ -1,4 +1,4 @@
-package org.speech4j.contentservice.S3;
+package org.speech4j.contentservice.s3;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -63,9 +63,6 @@ public class S3Config {
             log.info("Bucket name is not available."
                     + " Try again with a different Bucket name.");
         }
-        //Creating a bucket with a particular name (before start work with S3)
-        //s3client.createBucket(bucketName);
-
         return s3client;
     }
 }

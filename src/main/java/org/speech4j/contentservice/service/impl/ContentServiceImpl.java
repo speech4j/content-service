@@ -1,22 +1,15 @@
 package org.speech4j.contentservice.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.speech4j.contentservice.dto.response.ConfigDto;
 import org.speech4j.contentservice.entity.Content;
 import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.repository.ContentBoxRepository;
 import org.speech4j.contentservice.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Set;
 
 @Service

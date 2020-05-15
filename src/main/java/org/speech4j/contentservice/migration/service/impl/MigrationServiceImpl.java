@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.speech4j.contentservice.exception.InternalServerException;
 import org.speech4j.contentservice.migration.service.LiquibaseService;
 import org.speech4j.contentservice.migration.service.MigrationService;
-import org.speech4j.contentservice.migration.service.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
