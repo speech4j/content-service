@@ -1,4 +1,4 @@
-package org.speech4j.contentservice.s3;
+package org.speech4j.contentservice.aws;
 
 import lombok.extern.slf4j.Slf4j;
 import org.speech4j.contentservice.dto.response.ConfigDto;

@@ -1,4 +1,4 @@
-package org.speech4j.contentservice.s3;
+package org.speech4j.contentservice.aws;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

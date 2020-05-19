@@ -39,7 +39,7 @@ import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtil
 @AutoConfigureMockMvc
 @SpringBootTest(classes = ContentServiceApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ContentApiTest extends AbstractContainerBaseTest {
+class ContentApiTest extends AbstractContainerBaseTest {
     @Autowired
     private TestRestTemplate template;
     private HttpHeaders headers = new HttpHeaders();
@@ -57,7 +57,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void createContentTest_successFlow(
+    void createContentTest_successFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto
     ) {
@@ -74,7 +74,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void createContentTest_unsuccessFlow( Map<String, String> tenantIds) {
+    void createContentTest_unsuccessFlow( Map<String, String> tenantIds) {
         final String url =  "/api/tenants/" +  tenantIds.get("real") + "/contents";
         //Make entity null
         request = new HttpEntity<>(null, headers);
@@ -87,7 +87,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void createContentTestWithMissedRequiredField_unsuccessFlow(
+    void createContentTestWithMissedRequiredField_unsuccessFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto
     ) {
@@ -104,7 +104,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void createContentTestWitFakeTenantId_unsuccessFlow(
+    void createContentTestWitFakeTenantId_unsuccessFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto
     ) {
@@ -122,7 +122,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void createContentTestWithNullPathVariable_unsuccessFlow(
+    void createContentTestWithNullPathVariable_unsuccessFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto
     ) {
@@ -140,7 +140,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void findByIdTest_successFlow(
+    void findByIdTest_successFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto,
             Map<String, String> contentIds
@@ -156,7 +156,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void findByIdTest_unsuccessFlow(
+    void findByIdTest_unsuccessFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto,
             Map<String, String> contentIds
@@ -171,7 +171,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void updateContentTest_successFlow(
+    void updateContentTest_successFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto,
             Map<String, String> contentIds
@@ -189,7 +189,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void updateContentTest_unsuccessFlow(
+    void updateContentTest_unsuccessFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto,
             Map<String, String> contentIds
@@ -206,7 +206,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void deleteContent_successFlow(
+    void deleteContent_successFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto,
             Map<String, String> contentIds
@@ -223,7 +223,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void deleteEntity_unsuccessFlow(
+    void deleteEntity_unsuccessFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto,
             Map<String, String> contentIds
@@ -238,7 +238,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void findByTagsTest_successFlow(Map<String, String> tenantIds) {
+    void findByTagsTest_successFlow(Map<String, String> tenantIds) {
         String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
@@ -253,7 +253,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void findByTagsTest_unsuccessFlow(Map<String, String> tenantIds) {
+    void findByTagsTest_unsuccessFlow(Map<String, String> tenantIds) {
         String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#fakeTag")
@@ -267,7 +267,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void findByTagsPageableTest_successFlowWhen200IsReceived(Map<String, String> tenantIds) {
+    void findByTagsPageableTest_successFlowWhen200IsReceived(Map<String, String> tenantIds) {
         String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
@@ -284,7 +284,7 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    public void findByTagsPageableTest_unsuccessFlowWhen404IsReceived(Map<String, String> tenantIds) {
+    void findByTagsPageableTest_unsuccessFlowWhen404IsReceived(Map<String, String> tenantIds) {
         String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
