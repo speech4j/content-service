@@ -1,9 +1,10 @@
 package org.speech4j.contentservice.controller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.speech4j.contentservice.ContentServiceApplication;
-import org.speech4j.contentservice.dto.TagDto;
 import org.speech4j.contentservice.dto.handler.ResponseMessageDto;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
@@ -24,7 +25,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,55 +44,40 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     private TestRestTemplate template;
     private HttpHeaders headers = new HttpHeaders();
     private HttpEntity<ContentRequestDto> request;
-    private ContentRequestDto testContent;
-
     private final String exceptionMessage = "Content not found!";
-    private List<ContentRequestDto> contentList;
-    private List<ContentResponseDto> contentListResponse;
-    private String tenantId = "speech4j";
-    private String contentId;
+    private static List<ContentResponseDto> createdContents;
 
 
     @BeforeEach
     public void setUp() throws URISyntaxException{
         headers.setContentType(MediaType.APPLICATION_JSON);
-        //Initializing of test content
-        testContent = new ContentRequestDto();
-        testContent.setContentUrl("https://www.youtube.com/watch?v=LCDd433SdJE");
-        testContent.setTags(Arrays.asList(new TagDto("#nightcore"), new TagDto("#nightcoresong")));
-        testContent.setTranscript(
-                        "I went down to the crossroads, fell down on my knees\n" +
-                        "Down to the crossroads fell down on my knees\n" +
-                        "Asked the Lord above for mercy, " +
-                        "Take me, if you please");
-
-        request = new HttpEntity<>(testContent, headers);
-
         //Populating of db
-        contentList = getListOfContents();
-        contentListResponse = populateDB(contentList);
-        contentId = contentListResponse.get(0).getContentGuid();
+        createdContents = populateDB(getListOfContents());
     }
 
-    @Test
-    public void createContentTest_successFlow() {
-        final String url = "/api/tenants/" +  tenantId + "/contents";
-
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void createContentTest_successFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
+        request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ContentResponseDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ContentResponseDto.class);
 
         //Verify request succeed
         assertEquals(201, response.getStatusCodeValue());
+        assertThat(requestDto).isEqualToIgnoringGivenFields(response.getBody(), "id");
         assertThat(response.getBody()).isNotNull();
     }
 
-    @Test
-    public void createContentTest_unsuccessFlow() {
-        final String url =  "/api/tenants/" +  tenantId + "/contents";
-
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void createContentTest_unsuccessFlow( Map<String, String> tenantIds) {
+        final String url =  "/api/tenants/" +  tenantIds.get("real") + "/contents";
         //Make entity null
         request = new HttpEntity<>(null, headers);
-
         ResponseEntity<ResponseMessageDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
 
@@ -96,13 +85,15 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         assertEquals(400, response.getStatusCodeValue());
     }
 
-    @Test
-    public void createContentTestWithMissedRequiredField_unsuccessFlow() {
-        final String url = "/api/tenants/" +  tenantId + "/contents";
-
-        testContent.setTranscript(null);
-        request = new HttpEntity<>(testContent, headers);
-
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void createContentTestWithMissedRequiredField_unsuccessFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
+        requestDto.setTranscript(null);
+        request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ResponseMessageDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
 
@@ -111,12 +102,14 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         assertEquals("Validation failed for object='contentRequestDto'. Error count: 1", response.getBody().getMessage());
     }
 
-    @Test
-    public void createContentTestWitFakeTenantId_unsuccessFlow() {
-        final String url = "/api/tenants/" +  0 + "/contents";
-
-        request = new HttpEntity<>(testContent, headers);
-
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void createContentTestWitFakeTenantId_unsuccessFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("fake") + "/contents";
+        request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ResponseMessageDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
 
@@ -127,14 +120,16 @@ public class ContentApiTest extends AbstractContainerBaseTest {
                 "Tenant with specified identifier [0] not found!", response.getBody().getMessage());
     }
 
-    @Test
-    public void createContentTestWithNullPathVariable_unsuccessFlow() {
-        final String url = "/api/tenants/" +  null + "/contents";
-
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void createContentTestWithNullPathVariable_unsuccessFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("null") + "/contents";
+        request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ResponseMessageDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
-
-
         //Verify this exception because of null tenant id
         assertEquals(404, response.getStatusCodeValue());
         assertEquals("Could not open JPA EntityManager for transaction; " +
@@ -143,47 +138,65 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
 
-    @Test
-    public void findByIdTest_successFlow() {
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void findByIdTest_successFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto,
+            Map<String, String> contentIds
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("real");
         ResponseEntity<ContentResponseDto> response
-                = template.exchange("/api/tenants/" +  tenantId + "/contents/" + contentId, HttpMethod.GET, null, ContentResponseDto.class);
+                = template.exchange(url, HttpMethod.GET, null, ContentResponseDto.class);
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
-        assertThat(response.getBody()).isNotNull();
+        assertThat(requestDto).isEqualToIgnoringGivenFields(response.getBody(), "id");
     }
 
-    @Test
-    public void findByIdTest_unsuccessFlow() {
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void findByIdTest_unsuccessFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto,
+            Map<String, String> contentIds
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("fake");
         ResponseEntity<ResponseMessageDto> response
-                = template.exchange("/api/tenants/" +  tenantId + "/contents/" + 0, HttpMethod.GET, null, ResponseMessageDto.class);
+                = template.exchange(url, HttpMethod.GET, null, ResponseMessageDto.class);
 
         //Verify request not succeed
         checkEntityNotFoundException(response);
     }
 
-    @Test
-    public void updateContentTest_successFlow() {
-        final String url = "/api/tenants/" +  tenantId + "/contents/" + contentId;
-
-        testContent.setTranscript("New test");
-        request = new HttpEntity<>(testContent, headers);
-
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void updateContentTest_successFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto,
+            Map<String, String> contentIds
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("real");
+        requestDto.setTranscript("New test");
+        request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ContentResponseDto> response =
                 this.template.exchange(url, HttpMethod.PUT, request, ContentResponseDto.class);
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
-        assertThat(response.getBody()).isNotNull();
+        assertThat(requestDto).isEqualToIgnoringGivenFields(response.getBody(), "id");
     }
 
-    @Test
-    public void updateContentTest_unsuccessFlow() {
-        final String url = "/api/tenants/" +  tenantId + "/contents/" + 0;
-
-        testContent.setTranscript("New test");
-        request = new HttpEntity<>(testContent, headers);
-
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void updateContentTest_unsuccessFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto,
+            Map<String, String> contentIds
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("fake");
+        requestDto.setTranscript("New test");
+        request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ResponseMessageDto> response =
                 this.template.exchange(url, HttpMethod.PUT, request, ResponseMessageDto.class);
 
@@ -191,9 +204,14 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         checkEntityNotFoundException(response);
     }
 
-    @Test
-    public void deleteContent_successFlow() {
-        final String url = "/api/tenants/" +  tenantId + "/contents/" + contentId;
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void deleteContent_successFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto,
+            Map<String, String> contentIds
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("real");
 
         ResponseEntity<ResponseMessageDto> response
                 = template.exchange(url, HttpMethod.DELETE, null, ResponseMessageDto.class);
@@ -203,10 +221,14 @@ public class ContentApiTest extends AbstractContainerBaseTest {
 
     }
 
-    @Test
-    public void deleteEntity_unsuccessFlow() {
-        final String url = "/api/tenants/" +  tenantId + "/contents/" + 0;
-
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void deleteEntity_unsuccessFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto,
+            Map<String, String> contentIds
+    ) {
+        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("fake");
         ResponseEntity<ResponseMessageDto> response
                 = template.exchange(url, HttpMethod.DELETE, null, ResponseMessageDto.class);
 
@@ -214,15 +236,14 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         checkEntityNotFoundException(response);
     }
 
-    @Test
-    public void findByTagsTest_successFlow() {
-        String url = "/api/tenants/" +  tenantId + "/contents";
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void findByTagsTest_successFlow(Map<String, String> tenantIds) {
+        String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
                 .build().encode().toUri();
-
-        ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(
-                uri,
+        ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(uri,
                 HttpMethod.GET, null, new ParameterizedTypeReference<PagedModel<ContentResponseDto>>(){});
 
         //Verify request succeed
@@ -230,47 +251,46 @@ public class ContentApiTest extends AbstractContainerBaseTest {
         assertThat(response.getBody()).isNotNull();
     }
 
-    @Test
-    public void findByTagsTest_unsuccessFlow() {
-        String url = "/api/tenants/" +  tenantId + "/contents";
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void findByTagsTest_unsuccessFlow(Map<String, String> tenantIds) {
+        String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#fakeTag")
                 .build().encode().toUri();
-
-        ResponseEntity<ResponseMessageDto> response = template.exchange(
-                uri,
+        ResponseEntity<ResponseMessageDto> response = template.exchange(uri,
                 HttpMethod.GET, null, ResponseMessageDto.class);
 
         //Verify request isn't succeed
         checkEntityNotFoundException(response);
     }
 
-    @Test
-    public void findByTagsPageableTest_successFlowWhen200IsReceived() {
-        String url = "/api/tenants/" +  tenantId + "/contents";
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void findByTagsPageableTest_successFlowWhen200IsReceived(Map<String, String> tenantIds) {
+        String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
                 .queryParam("page", 0)
                 .queryParam("size",2)
                 .build().encode().toUri();
 
-        ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(
-                uri,
+        ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(uri,
                 HttpMethod.GET, null , new ParameterizedTypeReference<PagedModel<ContentResponseDto>>(){});
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
     }
 
-    @Test
-    public void findByTagsPageableTest_unsuccessFlowWhen404IsReceived() {
-        String url = "/api/tenants/" +  tenantId + "/contents";
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    public void findByTagsPageableTest_unsuccessFlowWhen404IsReceived(Map<String, String> tenantIds) {
+        String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
                 .queryParam("page", randomNumeric(5))
                 .queryParam("size",1)
                 .build().encode().toUri();
-
         ResponseEntity<ResponseMessageDto> response = template.exchange(uri,
                 HttpMethod.GET, null, ResponseMessageDto.class);
 
@@ -284,15 +304,28 @@ public class ContentApiTest extends AbstractContainerBaseTest {
     }
 
     private List<ContentResponseDto> populateDB(List<ContentRequestDto> list) throws URISyntaxException {
-        final String url = "/api/tenants/" + tenantId + "/contents";
+        final String url = "/api/tenants/speech4j/contents";
         URI uri = new URI(url);
         List<ContentResponseDto> contentListResponse = new ArrayList<>();
         ResponseEntity<ContentResponseDto> response1 = template.postForEntity(uri, new HttpEntity<>(list.get(0), headers), ContentResponseDto.class);
         ResponseEntity<ContentResponseDto> response2 = template.postForEntity(uri, new HttpEntity<>(list.get(1), headers), ContentResponseDto.class);
 
-        contentListResponse.add(response1.getBody());
-        contentListResponse.add(response2.getBody());
-
+        contentListResponse.addAll(Arrays.asList(response1.getBody(),response2.getBody()));
         return contentListResponse;
+    }
+
+    private static Stream<Arguments> provideTestData() {
+        ContentRequestDto requestDto = getListOfContents().get(0);
+        Map<String, String> tenantIds = new HashMap();
+        tenantIds.put("real", "speech4j");
+        tenantIds.put("fake", "0");
+        tenantIds.put("null", "null");
+        Map<String, String> contentIds = new HashMap();
+        contentIds.put("real", createdContents.get(0).getContentGuid());
+        contentIds.put("fake", "0");
+
+        return Stream.of(
+                Arguments.of(tenantIds, requestDto, contentIds)
+        );
     }
 }
