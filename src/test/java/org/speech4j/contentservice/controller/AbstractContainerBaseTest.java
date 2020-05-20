@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class AbstractContainerBaseTest {
+class AbstractContainerBaseTest {
     private static PostgreSQLContainer postgreSQLContainer;
     private static WireMockServer wireMockServer;
 

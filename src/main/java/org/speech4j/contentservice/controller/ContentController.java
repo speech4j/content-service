@@ -158,7 +158,7 @@ public class ContentController {
         contentService.deleteById(contentId);
     }
 
-    @PostMapping(value = "/{contentId}/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Upload an audio file and save the content with a particular URL to database by the tenant ID",
@@ -183,7 +183,7 @@ public class ContentController {
         createdContent.setContentUrl(url);
         contentService.update(createdContent);
 
-        return "File was uploaded successfully!";
+        return "File was uploaded successfully! Your current identifier:" + createdContent.getGuid();
     }
 
     @GetMapping(value = "/{contentId}/download")

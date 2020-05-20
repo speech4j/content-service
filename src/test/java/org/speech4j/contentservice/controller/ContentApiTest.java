@@ -13,16 +13,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +56,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
 
 
     @BeforeEach
-    public void setUp() throws URISyntaxException{
+    public void setUp() throws URISyntaxException {
         headers.setContentType(MediaType.APPLICATION_JSON);
         //Populating of db
         createdContents = populateDB(getListOfContents());
@@ -61,7 +68,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             Map<String, String> tenantIds,
             ContentRequestDto requestDto
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents";
         request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ContentResponseDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ContentResponseDto.class);
@@ -74,8 +81,8 @@ class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    void createContentTest_unsuccessFlow( Map<String, String> tenantIds) {
-        final String url =  "/api/tenants/" +  tenantIds.get("real") + "/contents";
+    void createContentTest_unsuccessFlow(Map<String, String> tenantIds) {
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents";
         //Make entity null
         request = new HttpEntity<>(null, headers);
         ResponseEntity<ResponseMessageDto> response =
@@ -91,7 +98,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             Map<String, String> tenantIds,
             ContentRequestDto requestDto
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents";
         requestDto.setTranscript(null);
         request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ResponseMessageDto> response =
@@ -108,7 +115,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             Map<String, String> tenantIds,
             ContentRequestDto requestDto
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("fake") + "/contents";
+        final String url = "/api/tenants/" + tenantIds.get("fake") + "/contents";
         request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ResponseMessageDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
@@ -126,7 +133,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             Map<String, String> tenantIds,
             ContentRequestDto requestDto
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("null") + "/contents";
+        final String url = "/api/tenants/" + tenantIds.get("null") + "/contents";
         request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ResponseMessageDto> response =
                 this.template.exchange(url, HttpMethod.POST, request, ResponseMessageDto.class);
@@ -145,7 +152,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             ContentRequestDto requestDto,
             Map<String, String> contentIds
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("real");
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("real");
         ResponseEntity<ContentResponseDto> response
                 = template.exchange(url, HttpMethod.GET, null, ContentResponseDto.class);
 
@@ -161,7 +168,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             ContentRequestDto requestDto,
             Map<String, String> contentIds
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("fake");
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("fake");
         ResponseEntity<ResponseMessageDto> response
                 = template.exchange(url, HttpMethod.GET, null, ResponseMessageDto.class);
 
@@ -176,7 +183,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             ContentRequestDto requestDto,
             Map<String, String> contentIds
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("real");
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("real");
         requestDto.setTranscript("New test");
         request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ContentResponseDto> response =
@@ -194,7 +201,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             ContentRequestDto requestDto,
             Map<String, String> contentIds
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("fake");
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("fake");
         requestDto.setTranscript("New test");
         request = new HttpEntity<>(requestDto, headers);
         ResponseEntity<ResponseMessageDto> response =
@@ -211,7 +218,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             ContentRequestDto requestDto,
             Map<String, String> contentIds
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("real");
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("real");
 
         ResponseEntity<ResponseMessageDto> response
                 = template.exchange(url, HttpMethod.DELETE, null, ResponseMessageDto.class);
@@ -228,7 +235,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             ContentRequestDto requestDto,
             Map<String, String> contentIds
     ) {
-        final String url = "/api/tenants/" +  tenantIds.get("real") + "/contents/" + contentIds.get("fake");
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("fake");
         ResponseEntity<ResponseMessageDto> response
                 = template.exchange(url, HttpMethod.DELETE, null, ResponseMessageDto.class);
 
@@ -239,12 +246,13 @@ class ContentApiTest extends AbstractContainerBaseTest {
     @ParameterizedTest
     @MethodSource("provideTestData")
     void findByTagsTest_successFlow(Map<String, String> tenantIds) {
-        String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
+        String url = "/api/tenants/" + tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
                 .build().encode().toUri();
         ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(uri,
-                HttpMethod.GET, null, new ParameterizedTypeReference<PagedModel<ContentResponseDto>>(){});
+                HttpMethod.GET, null, new ParameterizedTypeReference<PagedModel<ContentResponseDto>>() {
+                });
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
@@ -254,7 +262,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
     @ParameterizedTest
     @MethodSource("provideTestData")
     void findByTagsTest_unsuccessFlow(Map<String, String> tenantIds) {
-        String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
+        String url = "/api/tenants/" + tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#fakeTag")
                 .build().encode().toUri();
@@ -268,15 +276,16 @@ class ContentApiTest extends AbstractContainerBaseTest {
     @ParameterizedTest
     @MethodSource("provideTestData")
     void findByTagsPageableTest_successFlowWhen200IsReceived(Map<String, String> tenantIds) {
-        String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
+        String url = "/api/tenants/" + tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
                 .queryParam("page", 0)
-                .queryParam("size",2)
+                .queryParam("size", 2)
                 .build().encode().toUri();
 
         ResponseEntity<PagedModel<ContentResponseDto>> response = template.exchange(uri,
-                HttpMethod.GET, null , new ParameterizedTypeReference<PagedModel<ContentResponseDto>>(){});
+                HttpMethod.GET, null, new ParameterizedTypeReference<PagedModel<ContentResponseDto>>() {
+                });
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
@@ -285,11 +294,11 @@ class ContentApiTest extends AbstractContainerBaseTest {
     @ParameterizedTest
     @MethodSource("provideTestData")
     void findByTagsPageableTest_unsuccessFlowWhen404IsReceived(Map<String, String> tenantIds) {
-        String url = "/api/tenants/" +  tenantIds.get("real") + "/contents";
+        String url = "/api/tenants/" + tenantIds.get("real") + "/contents";
         URI uri = UriComponentsBuilder.fromPath(url)
                 .queryParam("tagNames", "#nightcore, #music")
                 .queryParam("page", randomNumeric(5))
-                .queryParam("size",1)
+                .queryParam("size", 1)
                 .build().encode().toUri();
         ResponseEntity<ResponseMessageDto> response = template.exchange(uri,
                 HttpMethod.GET, null, ResponseMessageDto.class);
@@ -298,7 +307,61 @@ class ContentApiTest extends AbstractContainerBaseTest {
         checkEntityNotFoundException(response);
     }
 
-    private void checkEntityNotFoundException(ResponseEntity<ResponseMessageDto> response){
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    void uploadAudioFileTest_successFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto
+    ) throws IOException {
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/upload";
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        LinkedMultiValueMap<String, Object> parameters = new LinkedMultiValueMap<>();
+        parameters.add("file", getUserFileResource());
+        parameters.add("dto", requestDto);
+        HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(parameters, headers);
+        ResponseEntity<String> response = this.template.exchange(url, HttpMethod.POST, entity, String.class);
+
+        // Expect Ok
+        assertEquals(200, response.getStatusCodeValue());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    void uploadAudioFileTest_unsuccessFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto
+    ) throws IOException {
+        final String url = "/api/tenants/" + tenantIds.get("fake") + "/contents/upload";
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        LinkedMultiValueMap<String, Object> parameters = new LinkedMultiValueMap<>();
+        parameters.add("file", getUserFileResource());
+        parameters.add("dto", requestDto);
+        HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(parameters, headers);
+        ResponseEntity<ResponseMessageDto> response = this.template.exchange(url, HttpMethod.POST, entity, ResponseMessageDto.class);
+
+        // Expect Ok
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals("Could not open JPA EntityManager for transaction; " +
+                "nested exception is org.speech4j.contentservice.exception.TenantNotFoundException: " +
+                "Tenant with specified identifier [" + tenantIds.get("fake") + "] not found!", response.getBody().getMessage());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestData")
+    void downloadAudioFileTest_unsuccessFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto,
+            Map<String, String> contentIds
+    ) {
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("fake") + "/download";
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        ResponseEntity<ByteArrayResource> response =
+                this.template.exchange(url, HttpMethod.GET, null, ByteArrayResource.class);
+        // Expect Ok
+        assertEquals(404, response.getStatusCodeValue());
+    }
+
+    private void checkEntityNotFoundException(ResponseEntity<ResponseMessageDto> response) {
         assertEquals(404, response.getStatusCodeValue());
         assertEquals(exceptionMessage, response.getBody().getMessage());
     }
@@ -310,7 +373,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
         ResponseEntity<ContentResponseDto> response1 = template.postForEntity(uri, new HttpEntity<>(list.get(0), headers), ContentResponseDto.class);
         ResponseEntity<ContentResponseDto> response2 = template.postForEntity(uri, new HttpEntity<>(list.get(1), headers), ContentResponseDto.class);
 
-        contentListResponse.addAll(Arrays.asList(response1.getBody(),response2.getBody()));
+        contentListResponse.addAll(Arrays.asList(response1.getBody(), response2.getBody()));
         return contentListResponse;
     }
 
@@ -327,5 +390,13 @@ class ContentApiTest extends AbstractContainerBaseTest {
         return Stream.of(
                 Arguments.of(tenantIds, requestDto, contentIds)
         );
+    }
+
+    private static FileSystemResource getUserFileResource() throws IOException {
+        Path tempFile = Files.createTempFile("upload-test-file", ".txt");
+        Files.write(tempFile, "some test content...\nline1\nline2".getBytes());
+        File file = tempFile.toFile();
+        //to upload in-memory bytes use ByteArrayResource instead
+        return new FileSystemResource(file);
     }
 }
