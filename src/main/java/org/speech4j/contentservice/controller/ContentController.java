@@ -183,7 +183,7 @@ public class ContentController {
         createdContent.setContentUrl(url);
         contentService.update(createdContent);
 
-        return "File was uploaded successfully! Your current identifier:" + createdContent.getGuid();
+        return "File was uploaded successfully! Your current identifier is: " + createdContent.getGuid();
     }
 
     @GetMapping(value = "/{contentId}/download")
@@ -210,7 +210,7 @@ public class ContentController {
         return ResponseEntity
                 .ok()
                 .contentLength(byteArrayResource.contentLength())
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .contentType(MediaType.parseMediaType("multipart/mixed;boundary=gc0p4Jq0M2Yt08jU534c0p"))
                 .header("Content-Disposition", "attachment; filename=" + filename)
                 .body(byteArrayResource);
     }

@@ -348,6 +348,32 @@ class ContentApiTest extends AbstractContainerBaseTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
+    void downloadAudioFileTest_successFlow(
+            Map<String, String> tenantIds,
+            ContentRequestDto requestDto
+    ) throws IOException {
+        //Uploading of test file
+        final String uploadUrl = "/api/tenants/" + tenantIds.get("real") + "/contents/upload";
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        LinkedMultiValueMap<String, Object> parameters = new LinkedMultiValueMap<>();
+        parameters.add("file", getUserFileResource());
+        parameters.add("dto", requestDto);
+        HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(parameters, headers);
+        ResponseEntity<String> uploadResponse = this.template.exchange(uploadUrl, HttpMethod.POST, entity, String.class);
+
+        //Downloading of test file
+        String contentId = uploadResponse.getBody();
+        final String downloadUrl = "/api/tenants/" + tenantIds.get("real") + "/contents/"
+                + contentId.substring(contentId.lastIndexOf(":") + 2) + "/download";
+        headers.setContentType(MediaType.parseMediaType("multipart/mixed;boundary=gc0p4Jq0M2Yt08jU534c0p"));
+        ResponseEntity<ByteArrayResource> downloadResponse =
+                this.template.exchange(downloadUrl, HttpMethod.GET, new HttpEntity<>(headers), ByteArrayResource.class);
+        //Expect Ok
+        assertEquals(200, downloadResponse.getStatusCodeValue());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestData")
     void downloadAudioFileTest_unsuccessFlow(
             Map<String, String> tenantIds,
             ContentRequestDto requestDto,
