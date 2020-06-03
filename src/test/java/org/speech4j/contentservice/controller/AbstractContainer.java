@@ -20,7 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class AbstractContainerBaseTest {
+class AbstractContainer {
     private static PostgreSQLContainer postgreSQLContainer;
     private static WireMockServer wireMockServer;
 
@@ -33,7 +33,7 @@ class AbstractContainerBaseTest {
 
         postgreSQLContainer.start();
         System.setProperty("spring.datasource.url", postgreSQLContainer.getJdbcUrl());
-        new AbstractContainerBaseTest().mockRemoteService();
+        new AbstractContainer().mockRemoteService();
     }
 
     private void mockRemoteService() {

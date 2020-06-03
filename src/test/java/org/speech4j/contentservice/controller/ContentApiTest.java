@@ -41,7 +41,7 @@ import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtil
 @AutoConfigureMockMvc
 @SpringBootTest(classes = ContentServiceApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ContentApiTest extends AbstractContainerBaseTest {
+class ContentApiTest extends AbstractContainer {
     @Autowired
     private TestRestTemplate template;
     private HttpHeaders headers = new HttpHeaders();

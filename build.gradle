@@ -89,11 +89,8 @@ project.tasks["sonarqube"].dependsOn "jacocoTestReport"
 
 
 //Liquibase configurations
-Properties prop = new Properties()
-prop.load(new FileInputStream("src/main/resources/liquibase.properties"))
 def changeLogFilePath = "$projectDir/src/main/resources/db/changelog/migrations"
-int fileCounter = new File(changeLogFilePath).list().length + 1
-
+def fileCounter = new File(changeLogFilePath).list().length + 1
 def getFileVersion = { number ->
     def count = 0
     while(number > 1){
@@ -102,19 +99,19 @@ def getFileVersion = { number ->
     }
     return count == 0 || count == 1 ? "00" : (count == 2) ? "0" : ""
 }
-
 def fileVersion = getFileVersion(fileCounter) + fileCounter
 def diffLog = changeLogFilePath + "/content-changelog-v" + fileVersion + ".xml"
-
 liquibase {
     activities {
-        main {
+        main{
             changeLogFile diffLog
-            referenceUrl prop.getProperty('referenceUrl')  //hibernate entities
-            url prop.getProperty('url')                    //current db schema
-            username prop.getProperty('username')
-            password prop.getProperty('password')
-            referenceDriver prop.getProperty('referenceDriver')
+            //hibernate entities
+            referenceUrl 'hibernate:spring:org.speech4j.contentservice.entity?dialect=org.hibernate.dialect.PostgreSQL82Dialect'
+            //current db schema
+            url 'jdbc:postgresql://' + System.getenv('DB_HOST') + ':' + System.getenv('DB_PORT') + '/' + System.getenv('DB_NAME')
+            username System.getenv('DB_USERNAME')
+            password System.getenv('DB_PASSWORD')
+            referenceDriver 'liquibase.ext.hibernate.database.connection.HibernateDriver'
             excludeObjects 'table:tenant_users,tenant_configs'
         }
     }
