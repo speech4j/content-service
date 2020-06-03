@@ -1,6 +1,11 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
-    <changeSet author="mslob (generated)" id="1589364238296-1">
+    <changeSet author="mslob (generated)" id="1591190170950-1">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="content_content_tag"/>
+            </not>
+        </preConditions>
         <createTable tableName="content_content_tag">
             <column name="content_guid" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -10,7 +15,12 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1589364238296-2">
+    <changeSet author="mslob (generated)" id="1591190170950-2">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="content_contents"/>
+            </not>
+        </preConditions>
         <createTable tableName="content_contents">
             <column name="guid" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="content_contentsPK"/>
@@ -20,7 +30,12 @@
             <column name="transcript" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1589364238296-3">
+    <changeSet author="mslob (generated)" id="1591190170950-3">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="content_tags"/>
+            </not>
+        </preConditions>
         <createTable tableName="content_tags">
             <column name="guid" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="content_tagsPK"/>
@@ -28,10 +43,10 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1589364238296-4">
+    <changeSet author="mslob (generated)" id="1591190170950-4">
         <addForeignKeyConstraint baseColumnNames="content_guid" baseTableName="content_content_tag" constraintName="FK1s24x9g7c6e1liq54n5klvwul" deferrable="false" initiallyDeferred="false" referencedColumnNames="guid" referencedTableName="content_contents" validate="true"/>
     </changeSet>
-    <changeSet author="mslob (generated)" id="1589364238296-5">
+    <changeSet author="mslob (generated)" id="1591190170950-5">
         <addForeignKeyConstraint baseColumnNames="tag_guid" baseTableName="content_content_tag" constraintName="FKa0nyg2vy7jgach4nldsouybox" deferrable="false" initiallyDeferred="false" referencedColumnNames="guid" referencedTableName="content_tags" validate="true"/>
     </changeSet>
 </databaseChangeLog>

@@ -1,6 +1,5 @@
 package org.speech4j.contentservice.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -27,19 +26,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.speech4j.contentservice.util.DataUtil.getListOfContents;
+import static org.speech4j.contentservice.util.DataFixture.getListOfContents;
 import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomNumeric;
 
 
@@ -52,15 +47,6 @@ class ContentApiTest extends AbstractContainerBaseTest {
     private HttpHeaders headers = new HttpHeaders();
     private HttpEntity<ContentRequestDto> request;
     private final String exceptionMessage = "Content not found!";
-    private static List<ContentResponseDto> createdContents;
-
-
-    @BeforeEach
-    public void setUp() throws URISyntaxException {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        //Populating of db
-        createdContents = populateDB(getListOfContents());
-    }
 
     @ParameterizedTest
     @MethodSource("provideTestData")
@@ -158,7 +144,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
 
         //Verify request succeed
         assertEquals(200, response.getStatusCodeValue());
-        assertThat(requestDto).isEqualToIgnoringGivenFields(response.getBody(), "id");
+        assertThat(requestDto).isEqualToIgnoringGivenFields(response.getBody(), "id", "tenantId");
     }
 
     @ParameterizedTest
@@ -218,7 +204,7 @@ class ContentApiTest extends AbstractContainerBaseTest {
             ContentRequestDto requestDto,
             Map<String, String> contentIds
     ) {
-        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("real");
+        final String url = "/api/tenants/" + tenantIds.get("real") + "/contents/" + contentIds.get("real-2");
 
         ResponseEntity<ResponseMessageDto> response
                 = template.exchange(url, HttpMethod.DELETE, null, ResponseMessageDto.class);
@@ -392,17 +378,6 @@ class ContentApiTest extends AbstractContainerBaseTest {
         assertEquals(exceptionMessage, response.getBody().getMessage());
     }
 
-    private List<ContentResponseDto> populateDB(List<ContentRequestDto> list) throws URISyntaxException {
-        final String url = "/api/tenants/speech4j/contents";
-        URI uri = new URI(url);
-        List<ContentResponseDto> contentListResponse = new ArrayList<>();
-        ResponseEntity<ContentResponseDto> response1 = template.postForEntity(uri, new HttpEntity<>(list.get(0), headers), ContentResponseDto.class);
-        ResponseEntity<ContentResponseDto> response2 = template.postForEntity(uri, new HttpEntity<>(list.get(1), headers), ContentResponseDto.class);
-
-        contentListResponse.addAll(Arrays.asList(response1.getBody(), response2.getBody()));
-        return contentListResponse;
-    }
-
     private static Stream<Arguments> provideTestData() {
         ContentRequestDto requestDto = getListOfContents().get(0);
         Map<String, String> tenantIds = new HashMap();
@@ -410,7 +385,8 @@ class ContentApiTest extends AbstractContainerBaseTest {
         tenantIds.put("fake", "0");
         tenantIds.put("null", "null");
         Map<String, String> contentIds = new HashMap();
-        contentIds.put("real", createdContents.get(0).getContentGuid());
+        contentIds.put("real", "1");
+        contentIds.put("real-2", "2");
         contentIds.put("fake", "0");
 
         return Stream.of(

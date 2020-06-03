@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import org.junit.jupiter.api.Test;
 import org.speech4j.contentservice.dto.response.ApiName;
 import org.speech4j.contentservice.dto.response.ConfigDto;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,7 +17,6 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -36,11 +34,6 @@ class AbstractContainerBaseTest {
         postgreSQLContainer.start();
         System.setProperty("spring.datasource.url", postgreSQLContainer.getJdbcUrl());
         new AbstractContainerBaseTest().mockRemoteService();
-    }
-
-    @Test
-    void isRunningContainer(){
-        assertTrue(postgreSQLContainer.isRunning());
     }
 
     private void mockRemoteService() {
