@@ -10,34 +10,25 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.sql.SQLException;
-import java.util.List;
 
 
 @ConditionalOnBean(MultiTenantConnectionProviderImpl.class)
 @Component
 @Slf4j
 public class MigrationInitBean {
-
     private TenantService tenantService;
     private MigrationService migrationService;
-    private static List<String> initialTenants;
 
     @Autowired
     public MigrationInitBean(
             TenantService tenantService,
-            MigrationService migrationService
-    ) {
+            MigrationService migrationService) {
         this.tenantService = tenantService;
         this.migrationService = migrationService;
     }
 
     @PostConstruct
     public void init() throws SQLException{
-        initialTenants = tenantService.getAllTenants();
-        migrationService.migrate(initialTenants);
-    }
-
-    public static List<String> getInitialTenants() {
-        return initialTenants;
+        migrationService.migrate(tenantService.getAllTenants());
     }
 }
