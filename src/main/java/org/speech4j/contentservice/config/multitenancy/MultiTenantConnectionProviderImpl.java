@@ -62,6 +62,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
             //Checking if specified tenant is in database even if this tenant will be created at runtime
             else if (getNewRuntimeTenants(tenantService.getAllTenants()).contains(tenantName)) {
                 migrationService.migrate(getNewRuntimeTenants(tenantService.getAllTenants()));
+                initialTenants.add(tenantName);
                 connection.setSchema(tenantName);
                 logger.debug("DATABASE: Schema with id [{}] was successfully set as default!", tenantName);
             }
