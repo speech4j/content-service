@@ -20,11 +20,9 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class ContentRequestDto {
+public class ContentUploadRequestDto {
     @NotEmpty( message = "{field.not.empty}")
     private List<TagDto> tags;
-    @NotBlank( message = "{field.not.empty}")
-    private String contentUrl;
     @NotBlank( message = "{field.not.empty}")
     private String transcript;
 }

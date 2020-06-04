@@ -11,20 +11,20 @@ import java.util.Map;
 
 @Component
 public class TenantInterceptor extends HandlerInterceptorAdapter {
-
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Map pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        String tenantId = (String) pathVariables.get("tenantId");
-        TenantContext.setCurrentTenant(tenantId);
-
+        if (pathVariables != null) {
+            String tenantId = (String) pathVariables.get("tenantId");
+            TenantContext.setCurrentTenant(tenantId);
+        }
         return true;
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
-                                                                                                            throws Exception {
+    public void postHandle(HttpServletRequest request,
+                           HttpServletResponse response,
+                           Object handler, ModelAndView modelAndView) {
         TenantContext.clear();
     }
 }

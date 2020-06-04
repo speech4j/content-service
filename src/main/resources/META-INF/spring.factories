@@ -1,0 +1,2 @@
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.speech4j.contentservice.handler.MigrationInitBeanFailureAnalyzer

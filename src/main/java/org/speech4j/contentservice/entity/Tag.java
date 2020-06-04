@@ -23,7 +23,7 @@ import java.util.List;
 @Entity
 @Builder
 @ToString
-@Table(name = "tags")
+@Table(name = "content_tags")
 public class Tag implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")

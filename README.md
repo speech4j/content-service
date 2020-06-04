@@ -29,10 +29,11 @@ The content-service for uploading an etalon pair to AWS S3.
 ## Running DB Instructions
  * create and run db container locally
  ```
- docker run --name postgres-docker \
+ docker run --name postgres-db \
                  -e POSTGRES_PASSWORD=postgres \
                  -e POSTGRES_USERNAME=postgres \
-                 -e POSTGRES_DB=content_db \
-                 -p 5434:5434 -d postgres
+                 -e POSTGRES_DB=tenant_db \
+                 -p 5432:5432 -d postgres
  ```
- 
+## Running DB Migration
+* `./gradlew diffChangeLog` - generate a file with differences between the current db schema and persist entities

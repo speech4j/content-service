@@ -2,10 +2,10 @@ package org.speech4j.contentservice.mapper;
 
 import org.speech4j.contentservice.controller.ContentController;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
+import org.speech4j.contentservice.dto.request.ContentUploadRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.speech4j.contentservice.entity.Content;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,6 @@ public class ContentDtoMapper extends RepresentationModelAssemblerSupport<Conten
     public ContentDtoMapper() {
         super(ContentController.class, ContentResponseDto.class);
     }
-
     @Autowired
     TagDtoMapper mapper;
 
@@ -28,6 +27,13 @@ public class ContentDtoMapper extends RepresentationModelAssemblerSupport<Conten
         return Content.builder()
                 .tags(mapper.toEntityList(dto.getTags()))
                 .contentUrl(dto.getContentUrl())
+                .transcript(dto.getTranscript())
+                .build();
+    }
+
+    public Content fromUploadEntity(ContentUploadRequestDto dto) {
+        return Content.builder()
+                .tags(mapper.toEntityList(dto.getTags()))
                 .transcript(dto.getTranscript())
                 .build();
     }
@@ -43,14 +49,9 @@ public class ContentDtoMapper extends RepresentationModelAssemblerSupport<Conten
                 .build();
     }
 
-    public Page<ContentResponseDto> toDtoPage(Page<Content> entityPage) {
-        return entityPage.map(this::toDto);
-    }
-
     @Override
     public ContentResponseDto toModel(Content entity) {
         ContentResponseDto contentResponseDto = toDto(entity);
-
         contentResponseDto.add(linkTo(
                 methodOn(ContentController.class)
                         .findById(entity.getTenantGuid(), entity.getGuid()))

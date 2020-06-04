@@ -2,7 +2,12 @@ package org.speech4j.contentservice.service.impl;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.speech4j.contentservice.exception.ContentNotFoundException;
 import org.speech4j.contentservice.exception.InternalServerException;
 import org.speech4j.contentservice.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
 
 @Service
+@Slf4j
 public class S3ServiceImpl implements S3Service {
     @Value(value = "${aws.bucketName}")
     private String bucketName;
@@ -30,17 +35,19 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public String uploadAudioFile(String tenantId, MultipartFile multipartFile) {
+    public String uploadAudioFile(String tenantId, String contentId, MultipartFile multipartFile) {
         String fileUrl = "";
         try {
-            File file = convertMultiPartToFile(multipartFile);
-            String fileName = generateFileName(tenantId, multipartFile);
+            InputStream inputStream = multipartFile.getInputStream();
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(inputStream.available());
+
+            String extension = getFileExtension(multipartFile.getOriginalFilename());
+            File fileName = new File(tenantId , contentId + extension);
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
-            amazonS3.putObject(
-                    bucketName,
-                    fileName,
-                    file
-            );
+
+            amazonS3.putObject(bucketName, fileName.toString(), inputStream, meta);
+            log.debug("S3-SERVICE: File was successfully uploaded to S3 bucket!");
         } catch (SdkClientException | IOException e) {
             throw new InternalServerException("AWS server error!");
         }
@@ -48,25 +55,18 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public void deleteFolder(String bucketName, String folderName) {
-        List fileList = amazonS3.listObjects(bucketName, folderName).getObjectSummaries();
-        for (Object object : fileList) {
-            S3ObjectSummary file = (S3ObjectSummary) object;
-            amazonS3.deleteObject(bucketName, file.getKey());
+    public byte[] downloadAudioFile(String filename) {
+        byte[] content = null;
+        try(S3Object s3Object = amazonS3.getObject(bucketName, filename)){
+            S3ObjectInputStream inputStream = s3Object.getObjectContent();
+            content = IOUtils.toByteArray(inputStream);
+        } catch (IOException e) {
+           throw new ContentNotFoundException("Content not found!");
         }
-        amazonS3.deleteObject(bucketName, folderName);
+        return content;
     }
 
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convertFile = new File(file.getOriginalFilename());
-        try(FileOutputStream fos = new FileOutputStream(convertFile)) {
-            fos.write(file.getBytes());
-        }
-
-        return convertFile;
-    }
-
-    private String generateFileName(String tenantId, MultipartFile multiPart) {
-        return  tenantId + "/" + multiPart.getOriginalFilename().replace(" ", "_");
+    private String getFileExtension(String filename){
+        return filename.substring(filename.lastIndexOf('.'));
     }
 }

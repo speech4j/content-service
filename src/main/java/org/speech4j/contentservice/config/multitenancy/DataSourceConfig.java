@@ -10,18 +10,18 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
-
-    @Value("${db.driver}")
+    @Value("${spring.datasource.driver}")
     private String driverClassName;
 
-    @Value("${db.url}")
+    @Value("${spring.datasource.url}")
     private String url;
 
-    @Value("${db.username}")
+    @Value("${spring.datasource.username}")
     private String username;
 
-    @Value("${db.password}")
+    @Value("${spring.datasource.password}")
     private String password;
+
 
     @Bean
     public DataSource getDatasource() {
@@ -31,7 +31,6 @@ public class DataSourceConfig {
         dataSourceConfig.setUsername(username);
         dataSourceConfig.setPassword(password);
         dataSourceConfig.setMaximumPoolSize(5);
-
         return new HikariDataSource(dataSourceConfig);
     }
 }

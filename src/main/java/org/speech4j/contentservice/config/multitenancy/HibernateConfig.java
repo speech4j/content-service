@@ -18,10 +18,9 @@ import java.util.Map;
 
 @Configuration
 public class HibernateConfig {
-
-    @Autowired
     private final JpaProperties jpaProperties;
 
+    @Autowired
     public HibernateConfig(JpaProperties jpaProperties) {
         this.jpaProperties = jpaProperties;
     }
@@ -39,7 +38,6 @@ public class HibernateConfig {
         properties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.SCHEMA);
         properties.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, multiTenantConnectionProviderImpl);
         properties.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, currentTenantIdentifierResolverImpl);
-        properties.put("hibernate.hbm2ddl.auto", "update");
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);

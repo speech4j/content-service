@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Map;
 @Getter
 @Setter
 @Builder
@@ -17,7 +18,6 @@ import lombok.ToString;
 @ToString
 public class ConfigDto {
     private String id;
-    private String apiName;
-    private String username;
-    private String password;
+    private ApiName apiName;
+    private Map<String, Object> credentials;
 }

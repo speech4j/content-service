@@ -1,4 +1,4 @@
-package org.speech4j.contentservice.dto.handler;
+package org.speech4j.contentservice.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

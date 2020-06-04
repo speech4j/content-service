@@ -2,12 +2,10 @@ package org.speech4j.contentservice.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "contents")
+@Table(name = "content_contents")
 public class Content implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
@@ -35,7 +33,7 @@ public class Content implements Serializable {
     private String guid;
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
-            name = "content_tag",
+            name = "content_content_tag",
             joinColumns = { @JoinColumn(name = "content_guid") },
             inverseJoinColumns = { @JoinColumn(name = "tag_guid") }
     )
