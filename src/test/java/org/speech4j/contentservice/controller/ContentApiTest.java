@@ -4,7 +4,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.speech4j.contentservice.ContentServiceApplication;
-import org.speech4j.contentservice.dto.handler.ResponseMessageDto;
+import org.speech4j.contentservice.dto.response.ResponseMessageDto;
 import org.speech4j.contentservice.dto.request.ContentRequestDto;
 import org.speech4j.contentservice.dto.response.ContentResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -19,7 +19,6 @@ import java.util.List;
 public class MigrationServiceImpl implements MigrationService {
     @Value("${liquibase.master_changelog}")
     private String masterChangelogFile;
-
     private LiquibaseService liquibaseService;
     private DataSource dataSource;
 

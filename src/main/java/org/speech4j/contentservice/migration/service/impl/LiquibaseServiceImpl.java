@@ -24,7 +24,6 @@ public class LiquibaseServiceImpl implements LiquibaseService {
         this.springLiquibase = springLiquibase;
     }
 
-
     public void updateSchema(Connection connection, String changelogFile, String persistentTenant) throws LiquibaseException {
         Database database = DatabaseFactory.getInstance()
                 .findCorrectDatabaseImplementation(new JdbcConnection(connection));

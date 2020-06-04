@@ -1,7 +1,7 @@
 package org.speech4j.contentservice.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.speech4j.contentservice.dto.handler.ResponseMessageDto;
+import org.speech4j.contentservice.dto.response.ResponseMessageDto;
 import org.speech4j.contentservice.exception.EntityNotFoundException;
 import org.speech4j.contentservice.exception.InternalServerException;
 import org.springframework.http.HttpStatus;
