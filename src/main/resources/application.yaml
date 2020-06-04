@@ -15,15 +15,15 @@ spring:
 # DATABASE
 # ===============================
 db:
-  host: ${HOST:localhost}
-  port: ${PORT:5432}
-  name: ${NAME:tenant_db}
+  host: ${DB_HOST:localhost}
+  port: ${DB_PORT:5432}
+  name: ${DB_NAME:tenant_db}
 spring:
   datasource:
     driver: org.postgresql.Driver
     url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
-    username: ${USERNAME:postgres}
-    password: ${PASSWORD:postgres}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
   liquibase:
     default-schema: speech4j
 ---
