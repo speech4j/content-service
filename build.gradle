@@ -105,6 +105,8 @@ jib {
     }
 }
 
+tasks.build.dependsOn tasks.jib
+
 //Liquibase configurations
 def changeLogFilePath = "$projectDir/src/main/resources/db/changelog/migrations"
 def fileCounter = new File(changeLogFilePath).list().length + 1
