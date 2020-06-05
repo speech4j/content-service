@@ -40,8 +40,8 @@ class AbstractContainer {
         //Setting of default credentials to aws S3
         Map<String, Object> credentials = new HashMap<>();
         credentials.put("bucket_name", System.getenv("TEST_AWS_BUCKET_NAME"));
-        credentials.put("access_key", System.getenv("TEST_AWS_ACCESS_KEY"));
-        credentials.put("secret_key", System.getenv("TEST_AWS_SECRET_KEY"));
+        credentials.put("access_key", System.getenv("AWS_ACCESS_KEY"));
+        credentials.put("secret_key", System.getenv("AWS_SECRET_KEY"));
         credentials.put("endpoint_url", System.getenv("TEST_AWS_ENDPOINT_URL"));
 
         ConfigDto config =  new ConfigDto();
