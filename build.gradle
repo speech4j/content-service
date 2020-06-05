@@ -108,7 +108,7 @@ liquibase {
             //hibernate entities
             referenceUrl 'hibernate:spring:org.speech4j.contentservice.entity?dialect=org.hibernate.dialect.PostgreSQL82Dialect'
             //current db schema
-            url 'jdbc:postgresql://' + System.getenv('DB_HOST') + ':' + System.getenv('DB_PORT') + '/' + System.getenv('DB_NAME')
+            url 'jdbc:postgresql://' + System.getenv('DB_HOST') + ':' + System.getenv('DB_PORT') + '/' + System.getenv('DB_NAME') + '?currentSchema=speech4j'
             username System.getenv('DB_USERNAME')
             password System.getenv('DB_PASSWORD')
             referenceDriver 'liquibase.ext.hibernate.database.connection.HibernateDriver'
