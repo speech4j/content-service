@@ -51,7 +51,8 @@ class AbstractContainer {
         JsonNode node = new ObjectMapper()
                 .convertValue(Arrays.asList(config), JsonNode.class);
         //Mocking remote service
-        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8082));
+        wireMockServer = new WireMockServer(WireMockConfiguration.options()
+                .port(Integer.parseInt(System.getenv("TENANT-SERVICE_PORT"))));
         wireMockServer.start();
         wireMockServer.stubFor(get(urlEqualTo("/tenants/speech4j/configs"))
                 .willReturn(aResponse()
