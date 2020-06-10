@@ -1,6 +1,6 @@
-version: '3'
+version: '2.1'
 services:
-  db:
+  tenant_db:
     image: postgres
     restart: always
     ports:
@@ -9,23 +9,42 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=tenant_db
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "tenant_db", "-U", "postgres" ]
+      timeout: 2s
+      interval: 1s
+      retries: 10
+
   tenant-service:
     image: speech4j/tenant-service:latest
     environment:
-      - DB_URL=jdbc:postgresql://db:5432/tenant_db
+      - DB_URL=jdbc:postgresql://0.0.0.0:5432/tenant_db
       - DB_PASSWORD=postgres
       - DB_USER=postgres
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
       - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "0.0.0.0:8082/actuator/health 2>&1 | grep UP || exit 1"]
+      timeout: 2s
+      interval: 1s
+      retries: 10
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
   content-service:
     image: speech4j/content-service:latest
     environment:
-      - DB_URL=jdbc:postgresql://db:5432/tenant_db
+      - DB_URL=jdbc:postgresql://tenant_db:5432/tenant_db
       - DB_PASSWORD=postgres
       - DB_USER=postgres
+    healthcheck:
+          test: ["CMD", "curl", "--fail", "--silent", "0.0.0.0:8080/actuator/health 2>&1 | grep UP || exit 1"]
+          timeout: 2s
+          interval: 1s
+          retries: 10
     depends_on:
-      - tenant-service
+      tenant_db:
+        condition: service_healthy
