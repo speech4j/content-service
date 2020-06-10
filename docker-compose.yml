@@ -44,8 +44,8 @@ services:
       - DB_URL=jdbc:postgresql://tenant_db:5432/tenant_db
       - DB_PASSWORD=postgres
       - DB_USER=postgres
-      - TENANT-SERVICE_HOST=localhost
-      - TENANT-SERVICE_PORT=8082
+      - TENANT_SERVICE_HOST=localhost
+      - TENANT_SERVICE_PORT=8082
     healthcheck:
           test: ["CMD", "curl", "--fail", "--silent", "localhost:8080/actuator/health 2>&1 | grep UP || exit 1"]
           timeout: 2s
