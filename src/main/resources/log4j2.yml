@@ -8,6 +8,6 @@ Configuration:
         Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
   Loggers:
     Root:
-      level: error
+      level: debug
       AppenderRef:
         ref: Console
