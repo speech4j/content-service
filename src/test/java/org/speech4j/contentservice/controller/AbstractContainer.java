@@ -40,8 +40,8 @@ class AbstractContainer {
         //Setting of default credentials to aws S3
         Map<String, Object> credentials = new HashMap<>();
         credentials.put("bucket_name", System.getenv("TEST_AWS_BUCKET_NAME"));
-        credentials.put("access_key", System.getenv("TEST_AWS_ACCESS_KEY"));
-        credentials.put("secret_key", System.getenv("TEST_AWS_SECRET_KEY"));
+        credentials.put("access_key", System.getenv("AWS_ACCESS_KEY"));
+        credentials.put("secret_key", System.getenv("AWS_SECRET_KEY"));
         credentials.put("endpoint_url", System.getenv("TEST_AWS_ENDPOINT_URL"));
 
         ConfigDto config =  new ConfigDto();
@@ -51,7 +51,8 @@ class AbstractContainer {
         JsonNode node = new ObjectMapper()
                 .convertValue(Arrays.asList(config), JsonNode.class);
         //Mocking remote service
-        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8082));
+        wireMockServer = new WireMockServer(WireMockConfiguration.options()
+                .port(Integer.parseInt(System.getenv("TENANT_SERVICE_PORT"))));
         wireMockServer.start();
         wireMockServer.stubFor(get(urlEqualTo("/tenants/speech4j/configs"))
                 .willReturn(aResponse()

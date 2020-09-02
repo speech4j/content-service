@@ -21,7 +21,7 @@ db:
 spring:
   datasource:
     driver: org.postgresql.Driver
-    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
+    url: ${DB_URL:jdbc:postgresql://${db.host}:${db.port}/${db.name}}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
   liquibase:
@@ -59,7 +59,7 @@ springdoc:
 
 remote:
   tenant-service:
-    url: http://localhost:8082/tenants/
+    url: http://${TENANT_SERVICE_HOST:localhost}:${TENANT_SERVICE_PORT:8082}/tenants/
 
 # ===============================
 # S3
